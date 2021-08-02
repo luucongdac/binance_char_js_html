@@ -1,0 +1,53 @@
+<html>
+<body>
+</body>
+
+<p id="label">.................</p>
+
+
+<script>
+
+
+
+var global = [];
+function getData(time, name) {
+    var burl = "https://api.binance.com";
+    var query = '/api/v3/ticker/' + time; //24hr
+    query += '?symbol=' + name; //BTCUSDT
+    var url = burl + query;
+
+    var ourRequest = new XMLHttpRequest();
+    ourRequest.open('GET',url,true);
+
+    ourRequest.onload = function(){ global[0] = ourRequest.responseText;}
+    ourRequest.send();
+}
+
+function getData_all(path) {
+    var ourRequest = new XMLHttpRequest();
+    ourRequest.open('GET', path ,true);
+    ourRequest.onload = function(){ global[0] = ourRequest.responseText;}
+    ourRequest.send();
+}
+
+
+
+
+function timeFunction() {
+            setInterval(function()
+            {  
+                // getData('24hr', 'BNBUSDT'); 
+                var path = 'https://api.binance.com/api/v3/exchangeInfo';
+                // var path = 'https://api.binance.com/fapi/v1/exchangeInfo';
+                getData_all(path);
+                // console.clear();
+                // console.log(global[0]); 
+                document.getElementById("label").innerHTML = global[0];
+            }, 1000);
+        }
+
+timeFunction();
+
+
+</script>
+</html>
