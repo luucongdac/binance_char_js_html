@@ -1,0 +1,151 @@
+<!doctype html>
+
+<head>
+
+  <script src="./index.js"></script>
+	<!-- Load plotly.js into the DOM -->
+	<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+ 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link href="default.css" rel="stylesheet" type="text/css">
+
+	<style>
+		h2 { font-size: 40px; }
+		ul {
+		background: hsla(34, 100%, 60%, 0.582);
+		padding: 20px;
+		}
+
+		ul li {
+		background: #cce5ff;
+		margin: 5px;
+		}
+	</style>
+
+	Number of bar: <input type="number" id="numberOfBar" value=200>
+	Time frame check: <input type="text" id="TimeFrameCheck" value="1d">
+	Request RestAPT delay ms: <input type="number" id="delayTime" value=100>
+	<br>
+	Number min bar need to check: <input type="number" id="numberMinOfBar" value=30>
+	Number max bar need to check: <input type="number" id="numberMaxOfBar" value=150>
+	<br>
+	<br>
+	<br>
+	<button onclick="getDataBarBinance()">check Binance</button>
+	<button onclick="getDataBarMexc()">check Mexc</button> <br>
+	<br>
+	<h4>========> Binance coins:</h4>
+	<ul id="binanceCoin">
+		<li>========> Binance coins:</li>
+	</ul>
+	<h4>========> Mexc coins:</h4>
+	<ul id="mexcCoin">
+		<li>========> Mexc coins:</li>
+	</ul>
+	<h3>Draw chart time frame </h3>
+
+	Time Frame:(30m,1h,4h,8h,1d,1w,1M) <input type="text" id="timeFrame" value="1d">
+	<!-- <select name="choice" id="timeFrame">
+		<option value="1d">1d</option>
+		<option value="1w">1w</option>
+		<option value="1M">1M</option>
+		<option value="1h">1h</option>
+		<option value="4h">4h</option>
+		<option value="8h">8h</option>
+		<option value="30m">30m</option>
+		<option value="15m">15m</option>
+		<option value="5m">5m</option>
+	</select> -->
+
+	<br>
+	<br>
+	Chart Binance: <input type="text" id="symbolBinance" value="BTC-USDT">
+	<button onclick="drawChartBinance()">Get and Draw</button>
+	<br>
+	<br>
+	Chart Mexc:<input type="text" id="symbolMexc" value="BTC_USDT">
+	<button onclick="drawChartMexc()">Get and Draw</button>
+	<br>
+
+	<!-- <button onclick="changeText()">change Text</button> <br> -->
+
+	<h2>
+		<script>
+			document.write("Binance-Market: <span id=\"binanceMarket\">" + getDefaultMarketSymbol() + "</span> - ");
+			document.write("<span style=\"color:grey;\">");
+			document.write("Time frame: <span id=\"timeFrame\">" + timeCodeToText(getDefaultTimeInterval()) + "</span>");
+			document.write("</span>");
+			document.write(" - Maximum number of datasets: " + getDefaultNumberOfDatasets());
+		</script>
+	</h2>
+
+</head>
+
+<body>
+
+	<div class="navbar">
+					<script>
+						createDropDownMenus(getBaseCurrencies());
+					</script>
+	</div>
+
+	<!-- Plotly diagram of a Binance market pair -->
+  <script>
+  var intFrameHeight = window.innerHeight;
+  intDiagramHeight = Math.round(Math.max(intFrameHeight*0.7, intFrameHeight-280))
+	document.write("<div id='myDiv' style=\"height : " + intDiagramHeight + "px\"></div>")
+  </script>
+
+	<table display:inline-block>
+  	<tr>
+  		<th>
+  			Time frames:&nbsp;
+  		</th>
+  		<th>
+        <div class="btn-group">
+        	<script>
+            createButtonGroup(); //for different time frames
+          </script>
+      	</div>
+			</th>
+    </tr>
+  </table>
+
+  <table>
+    <tr>
+      <!-- Sliders for different SMAs -->
+    	<main>
+    		<th>
+    			Toggle SMAs :
+    		</th>
+        <script>
+          createSliders();
+        </script>
+  		</main>
+	  </tr>
+	</table>
+</body>
+<script>
+//Event listeners for the three SMA sliders: Every slider will trigger this event
+document.addEventListener("DOMContentLoaded", function (event) {
+  var _selector = document.querySelectorAll('.checkbox-inline').forEach(_selector => {
+    _selector.addEventListener('change', function (event) {
+          callApiAndPlot(getCurrentMarketSymbol(), getCurrentTimeInterval(), numberOfDatasets);
+        });
+  });
+});
+
+function reloadIfResized(){
+  var height = $(window).height();
+  $(window).on('resize', function() {
+    if ($(this).height() !== height) {
+      height = $(this).height();
+      document.location.reload(true);
+    }
+  });
+}
+// window.addEventListener('resize', reloadIfResized);
+</script>
+
+</html>
