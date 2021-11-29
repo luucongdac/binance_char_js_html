@@ -30,6 +30,27 @@
 	Number min bar need to check: <input type="number" id="numberMinOfBar" value=30>
 	Number max bar need to check: <input type="number" id="numberMaxOfBar" value=150>
 	<br>
+	<input type="checkbox" id="fibo02" name="box1" value="true" checked>
+	<label for="box1">Lower fibo 0.2</label><br>
+	<input type="checkbox" id="fibo03" name="box2" value="true" checked>
+	<label for="box2">Lower fibo 0.3</label><br>
+	<input type="checkbox" id="fibo05" name="box3" value="true">
+	<label for="box3">Lower fibo 0.5</label><br>
+	<input type="checkbox" id="sma20" name="box4" value="true">
+	<label for="box4">Upper SMA20</label><br>
+	<input type="checkbox" id="sma50" name="box5" value="true">
+	<label for="box5">Upper SMA50</label><br>
+	<input type="checkbox" id="lowerSMA50greaterSMA20" name="box5" value="true" >
+	<label for="box5">[SMA20 -> SMA50]</label><br>
+	<input type="checkbox" id="lowerSMA20greaterSMA50" name="box6" value="true" >
+	<label for="box6">[SMA50 -> SMA20]</label><br>
+	<input type="checkbox" id="greaterSMA20-50" name="box7" value="true" >
+	<label for="box7">greater SMA20 and SMA50</label><br>
+	<input type="checkbox" id="lowerSMA20-50" name="box8" value="true">
+	<label for="box8">lower SMA20 and SMA50</label><br>
+	<br>
+	<button onclick="checkBox()">check</button>
+	<br>
 	<br>
 	<br>
 	<button onclick="getDataBarBinance()">check Binance</button>

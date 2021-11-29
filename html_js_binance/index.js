@@ -414,20 +414,16 @@ async function getDataBarBinance() {
   for( var i = 0; i < symbols.length; i++)
   {
     if(symbols[i].symbol.includes('USD'))
-    {
       allSymbolUSD.push(symbols[i].symbol);
-    }
-    if(symbols[i].symbol.includes('USD') && !symbols[i].symbol.includes('UPUSDT') && !symbols[i].symbol.includes('DOWNUSDT'))
-    {
+    if(symbols[i].symbol.includes('USDT') && !symbols[i].symbol.includes('UPUSDT') && !symbols[i].symbol.includes('DOWNUSDT')
+    &&  !symbols[i].symbol.includes('BEARUSD') && !symbols[i].symbol.includes('BULLUSD'))
       allSymbolUSDT.push(symbols[i].symbol);
-    }
     if(symbols[i].symbol.includes('BTC'))
-    {
       allSymbolBTC.push(symbols[i].symbol);
-    }
   }
   console.log('=============>>>>>>> All Binance USDT coins: ' + allSymbolUSDT);
   changeText("---> Start: USDT",'binanceCoin');
+  checkBox();
   for (var i = 0; i < allSymbolUSDT.length; i++) {
     var returnData = getBarInforBinance(allSymbolUSDT[i],document.getElementById('TimeFrameCheck').value,document.getElementById('numberOfBar').value);
     await sleep(document.getElementById('delayTime').value);
@@ -471,6 +467,7 @@ async function getBarInforBinance(marketSymbol, timeInterval, numberOfDatasets) 
     var fibo_03 = 0.0;
     var fibo_05 = 0.0;
     var sma20 = 0.0;
+    var sma50 = 0.0;
 
     for(var i = 0; i < apiData.length; i++)
     {
@@ -484,7 +481,7 @@ async function getBarInforBinance(marketSymbol, timeInterval, numberOfDatasets) 
     fibo_02 = lowest + 0.236*(highes-lowest);
     fibo_03 = lowest + 0.382*(highes-lowest);
     fibo_05 = lowest + 0.5*(highes-lowest);
-    // call culate SMA20
+    // call culate SMA20 and SMA50
     var currentIndex = (apiData.length - 1);
     if(apiData.length > 20)
     {
@@ -494,28 +491,72 @@ async function getBarInforBinance(marketSymbol, timeInterval, numberOfDatasets) 
       }  
       sma20 = sma20/20;
     }
-
-    
-    if(closePrice[currentIndex] < fibo_02 && closePrice[currentIndex] > sma20 )
+    if(apiData.length > 50)
     {
-      var text = apiData.length + ', < 0.2' + ':  '+ marketSymbol +  '------> h: ' + highes+ ', l: ' + lowest + ', f02: ' + fibo_02 + ', c: ' + closePrice[currentIndex] + ', sma20: '+ sma20;
-      changeText(text,'binanceCoin');
-      console.log(text);
-    }  
-    else if(closePrice[currentIndex] < fibo_03 && closePrice[currentIndex] > sma20 )
-    {
-      var text =  apiData.length + ', < 0.3' + ':  '+ marketSymbol +  '------> h: ' + highes+ ', l: ' + lowest+ ', f03: ' + fibo_03 + ', c:  ' + closePrice[currentIndex]  + ', sma20: '+ sma20;
-      changeText(text,'binanceCoin');
-      console.log(text);
+      for(var i = currentIndex; i >  currentIndex - 50; i--)
+      {
+        sma50 = sma50 + parseFloat(closePrice[i]);
+      }  
+      sma50 = sma50/50;
     }
-    else
-    {
-      var text =  apiData.length + ', default' + ':  '+ marketSymbol +  '------> h: ' + highes+ ', l: ' + lowest+ ', f03: ' + fibo_03 + ', c:  ' + closePrice[currentIndex]  + ', sma20: '+ sma20;
-      console.log(text);    
-    }  
-    }
+    //check data    
+    var c = closePrice[currentIndex];
+    var leng = apiData.length;
 
-  // console.log('<============== end');
+    if(isF02 && c < fibo_02)
+    {
+      if(!isOverSMA20 && !isOverSMA50 && ! isBetweenSMA20andSMA50 && ! isBetweenSMA50andSAM20 && ! isOverSMA20andSMA50 && !isLowerSMA20andSMA50)
+        changeText(leng + ', [< 0.2]' + ' :  '+ marketSymbol,'binanceCoin');
+      if(isOverSMA20 && c > sma20 && sma20 != 0.0)
+        changeText(leng+ ', [< 0.2]--[> sma20]' + ' :  '+ marketSymbol,'binanceCoin');
+      if(isOverSMA50 && c > sma50 && sma50 != 0.0)
+        changeText(leng+ ', [< 0.2]--[> sma50]' + ' :  '+ marketSymbol,'binanceCoin');
+      if(isBetweenSMA20andSMA50 && c > sma20 && c < sma50 && sma20 != 0.0 && sma50 != 0.0)
+        changeText(leng+ ', [< 0.2]--[sma20 - sma50]' + ' :  '+ marketSymbol,'binanceCoin');
+      if(isBetweenSMA50andSAM20 && c < sma20 && c > sma50 && sma20 != 0.0 && sma50 != 0.0)
+        changeText(leng+ ', [< 0.2]--[sma50 - sma20]' + ' :  '+ marketSymbol,'binanceCoin');
+      if(isOverSMA20andSMA50 && c > sma20 && c > sma50 && sma20 != 0.0 && sma50 != 0.0) 
+        changeText(leng+ ', [< 0.2]--[> sma20,sma50]' + ' :  '+ marketSymbol,'binanceCoin');
+      if(isLowerSMA20andSMA50 && c < sma20 && c < sma50 && sma20 != 0.0 && sma50 != 0.0)
+        changeText(leng+ ', [< 0.2]--[< sma20,sma50]' + ' :  '+ marketSymbol,'binanceCoin');
+    }
+    if(isF03 && c < fibo_03 && c > fibo_02)
+    {
+      if(!isOverSMA20 && !isOverSMA50 && ! isBetweenSMA20andSMA50 && ! isBetweenSMA50andSAM20 && ! isOverSMA20andSMA50 && !isLowerSMA20andSMA50)
+        changeText(leng + ', [< 0.3]' + ' :  '+ marketSymbol,'binanceCoin');
+      if(isOverSMA20 && c > sma20 && sma20 != 0.0)
+        changeText(leng+ ', [< 0.3]--[> sma20]' + ' :  '+ marketSymbol,'binanceCoin');
+      if(isOverSMA50 && c > sma50 && sma50 != 0.0)
+        changeText(leng+ ', [< 0.3]--[> sma50]' + ' :  '+ marketSymbol,'binanceCoin');
+      if(isBetweenSMA20andSMA50 && c > sma20 && c < sma50  && sma20 != 0.0 && sma50 != 0.0)
+        changeText(leng+ ', [< 0.3]--[sma20 - sma50]' + ' :  '+ marketSymbol,'binanceCoin');
+      if(isBetweenSMA50andSAM20 && c < sma20 && c > sma50 && sma20 != 0.0 && sma50 != 0.0 )
+        changeText(leng+ ', [< 0.3]--[sma50 - sma20]' + ' :  '+ marketSymbol,'binanceCoin');
+      if(isOverSMA20andSMA50 && c > sma20 && c > sma50 && sma20 != 0.0 && sma50 != 0.0) 
+        changeText(leng+ ', [< 0.3]--[> sma20,sma50]' + ' :  '+ marketSymbol,'binanceCoin');
+      if(isLowerSMA20andSMA50 && c < sma20 && c < sma50 && sma20 != 0.0 && sma50 != 0.0)
+        changeText(leng+ ', [< 0.3]--[< sma20,sma50]' + ' :  '+ marketSymbol,'binanceCoin');
+    }
+    if(isF05 && c < fibo_05 && c > fibo_03 && c > fibo_02)
+    {
+      if(!isOverSMA20 && !isOverSMA50 && ! isBetweenSMA20andSMA50 && ! isBetweenSMA50andSAM20 && ! isOverSMA20andSMA50 && !isLowerSMA20andSMA50)
+        changeText(leng + ', [< 0.5]' + ' :  '+ marketSymbol,'binanceCoin');
+      if(isOverSMA20 && c > sma20 && sma20 != 0.0)
+        changeText(leng+ ', [< 0.5]--[> sma20]' + ' :  '+ marketSymbol,'binanceCoin');
+      if(isOverSMA50 && c > sma50 && sma50 != 0.0)
+        changeText(leng+ ', [< 0.5]--[> sma50]' + ' :  '+ marketSymbol,'binanceCoin');
+      if(isBetweenSMA20andSMA50 && c > sma20 && c < sma50 && sma20 != 0.0 && sma50 != 0.0)
+        changeText(leng+ ', [< 0.5]--[sma20 - sma50]' + ' :  '+ marketSymbol,'binanceCoin');
+      if(isBetweenSMA50andSAM20 && c < sma20 && c > sma50 && sma20 != 0.0 && sma50 != 0.0)
+        changeText(leng+ ', [< 0.5]--[sma50 - sma20]' + ' :  '+ marketSymbol,'binanceCoin');
+      if(isOverSMA20andSMA50 && c > sma20 && c > sma50 && sma20 != 0.0 && sma50 != 0.0) 
+        changeText(leng+ ', [< 0.5]--[> sma20,sma50]' + ' :  '+ marketSymbol,'binanceCoin');
+      if(isLowerSMA20andSMA50 && c < sma20 && c < sma50 && sma20 != 0.0 && sma50 != 0.0)
+        changeText(leng+ ', [< 0.5]--[< sma20,sma50]' + ' :  '+ marketSymbol,'binanceCoin');
+    }
+    if(c > fibo_05)
+      console.log('Binance default > 0.5: ' +marketSymbol );
+    }
 }
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -530,6 +571,7 @@ async function getDataBarMexc() {
   delete allSymbolUSDT_mexc;
   delete allSymbolBTC_mexc;
   deleteText("mexcCoin");
+  checkBox();
   // var api_url = 'https://www.mexc.com/open/api/v2/market/api_default_symbols'
   var api_url = 'https://www.mexc.com/open/api/v2/market/symbols'
   const response = await fetch(api_url);
@@ -586,6 +628,7 @@ async function getBarInforMexc(marketSymbol, timeInterval, numberOfDatasets) {
     var fibo_03 = 0.0;
     var fibo_05 = 0.0;
     var sma20 = 0.0;
+    var sma50 = 0.0;
 
     for(var i = 0; i < _length; i++)
     {
@@ -609,30 +652,73 @@ async function getBarInforMexc(marketSymbol, timeInterval, numberOfDatasets) {
       }  
       sma20 = sma20/20;
     }
-    if(closePrice[currentIndex] < fibo_02 && closePrice[currentIndex] > sma20 )
+    if(_length > 50)
     {
-      var text = _length + ', < 0.2' + ':  '+ marketSymbol +   '------> h: ' + highes+ ', l: ' + lowest + ', f02: ' + fibo_02 + ', c: ' + closePrice[currentIndex] + ', sma20: '+ sma20;
-      changeText(text,'mexcCoin');
-      console.log(text);
-    }  
-    else if(closePrice[currentIndex] < fibo_03 && closePrice[currentIndex] > sma20 )
-    {
-      var text = _length + ', < 0.3' + ':  '+ marketSymbol +   '------> h: ' + highes+', l: ' + lowest+ ', f03: ' + fibo_03 + ', c:  ' + closePrice[currentIndex]  + ', sma20: '+ sma20;
-      changeText(text,'mexcCoin');
-      console.log(text);
-    }
-    else
-    {
-      var text =  _length + ', default' + ':  '+ marketSymbol +  '------> h: ' + highes+ ', l: ' + lowest+ ', f03: ' + fibo_03 + ', c:  ' + closePrice[currentIndex]  + ', sma20: '+ sma20;
-      console.log(text);    
-    }    
-
-    // else
-    //   console.log('default' + ': ('+ marketSymbol + ' -day: ' +_length +  ') ,h: ' + highes+ ',l: ' + lowest+ ',f03: ' + fibo_03 + ',c:  ' + closePrice[currentIndex]  + ',sma20: '+ sma20);
- 
+      for(var i = currentIndex; i >  currentIndex - 50; i--)
+      {
+        sma50 = sma50 + parseFloat(closePrice[i]);
+      }  
+      sma50 = sma50/50;
     }
 
-  // console.log('<============== end');
+    //check data    
+    var c = closePrice[currentIndex];
+    var leng = _length;
+
+    if(isF02 && c < fibo_02)
+    {
+      if(!isOverSMA20 && !isOverSMA50 && ! isBetweenSMA20andSMA50 && ! isBetweenSMA50andSAM20 && ! isOverSMA20andSMA50 && !isLowerSMA20andSMA50)
+        changeText(leng + ', [< 0.2]' + ' :  '+ marketSymbol,'mexcCoin');
+      if(isOverSMA20 && c > sma20 && sma20 != 0.0)
+        changeText(leng+ ', [< 0.2]--[> sma20]' + ' :  '+ marketSymbol,'mexcCoin');
+      if(isOverSMA50 && c > sma50 && sma50 != 0.0)
+        changeText(leng+ ', [< 0.2]--[> sma50]' + ' :  '+ marketSymbol,'mexcCoin');
+      if(isBetweenSMA20andSMA50 && c > sma20 && c < sma50 && sma20 != 0.0 && sma50 != 0.0)
+        changeText(leng+ ', [< 0.2]--[sma20 - sma50]' + ' :  '+ marketSymbol,'mexcCoin');
+      if(isBetweenSMA50andSAM20 && c < sma20 && c > sma50 && sma20 != 0.0 && sma50 != 0.0)
+        changeText(leng+ ', [< 0.2]--[sma50 - sma20]' + ' :  '+ marketSymbol,'mexcCoin');
+      if(isOverSMA20andSMA50 && c > sma20 && c > sma50 && sma20 != 0.0 && sma50 != 0.0) 
+        changeText(leng+ ', [< 0.2]--[> sma20,sma50]' + ' :  '+ marketSymbol,'mexcCoin');
+      if(isLowerSMA20andSMA50 && c < sma20 && c < sma50 && sma20 != 0.0 && sma50 != 0.0)
+        changeText(leng+ ', [< 0.2]--[< sma20,sma50]' + ' :  '+ marketSymbol,'mexcCoin');
+    }
+    if(isF03 && c < fibo_03 && c > fibo_02)
+    {
+      if(!isOverSMA20 && !isOverSMA50 && ! isBetweenSMA20andSMA50 && ! isBetweenSMA50andSAM20 && ! isOverSMA20andSMA50 && !isLowerSMA20andSMA50)
+        changeText(leng + ', [< 0.3]' + ' :  '+ marketSymbol,'mexcCoin');
+      if(isOverSMA20 && c > sma20 && sma20 != 0.0)
+        changeText(leng+ ', [< 0.3]--[> sma20]' + ' :  '+ marketSymbol,'mexcCoin');
+      if(isOverSMA50 && c > sma50 && sma50 != 0.0)
+        changeText(leng+ ', [< 0.3]--[> sma50]' + ' :  '+ marketSymbol,'mexcCoin');
+      if(isBetweenSMA20andSMA50 && c > sma20 && c < sma50  && sma20 != 0.0 && sma50 != 0.0)
+        changeText(leng+ ', [< 0.3]--[sma20 - sma50]' + ' :  '+ marketSymbol,'mexcCoin');
+      if(isBetweenSMA50andSAM20 && c < sma20 && c > sma50 && sma20 != 0.0 && sma50 != 0.0 )
+        changeText(leng+ ', [< 0.3]--[sma50 - sma20]' + ' :  '+ marketSymbol,'mexcCoin');
+      if(isOverSMA20andSMA50 && c > sma20 && c > sma50 && sma20 != 0.0 && sma50 != 0.0) 
+        changeText(leng+ ', [< 0.3]--[> sma20,sma50]' + ' :  '+ marketSymbol,'mexcCoin');
+      if(isLowerSMA20andSMA50 && c < sma20 && c < sma50 && sma20 != 0.0 && sma50 != 0.0)
+        changeText(leng+ ', [< 0.3]--[< sma20,sma50]' + ' :  '+ marketSymbol,'mexcCoin');
+    }
+    if(isF05 && c < fibo_05 && c > fibo_03 && c > fibo_02)
+    {
+      if(!isOverSMA20 && !isOverSMA50 && ! isBetweenSMA20andSMA50 && ! isBetweenSMA50andSAM20 && ! isOverSMA20andSMA50 && !isLowerSMA20andSMA50)
+        changeText(leng + ', [< 0.5]' + ' :  '+ marketSymbol,'mexcCoin');
+      if(isOverSMA20 && c > sma20 && sma20 != 0.0)
+        changeText(leng+ ', [< 0.5]--[> sma20]' + ' :  '+ marketSymbol,'mexcCoin');
+      if(isOverSMA50 && c > sma50 && sma50 != 0.0)
+        changeText(leng+ ', [< 0.5]--[> sma50]' + ' :  '+ marketSymbol,'mexcCoin');
+      if(isBetweenSMA20andSMA50 && c > sma20 && c < sma50 && sma20 != 0.0 && sma50 != 0.0)
+        changeText(leng+ ', [< 0.5]--[sma20 - sma50]' + ' :  '+ marketSymbol,'mexcCoin');
+      if(isBetweenSMA50andSAM20 && c < sma20 && c > sma50 && sma20 != 0.0 && sma50 != 0.0)
+        changeText(leng+ ', [< 0.5]--[sma50 - sma20]' + ' :  '+ marketSymbol,'mexcCoin');
+      if(isOverSMA20andSMA50 && c > sma20 && c > sma50 && sma20 != 0.0 && sma50 != 0.0) 
+        changeText(leng+ ', [< 0.5]--[> sma20,sma50]' + ' :  '+ marketSymbol,'mexcCoin');
+      if(isLowerSMA20andSMA50 && c < sma20 && c < sma50 && sma20 != 0.0 && sma50 != 0.0)
+        changeText(leng+ ', [< 0.5]--[< sma20,sma50]' + ' :  '+ marketSymbol,'mexcCoin');
+    }
+    if(c > fibo_05)
+      console.log('mexcCoin default > 0.5: ' +marketSymbol );
+    }
 }
 // Dac Luu <--
 
@@ -642,6 +728,7 @@ function deleteText(id)
   parElement.innerHTML = '';
 }
 function changeText(text_in, id) {
+    console.log(id + ": " + text_in);
     var node = document.createElement("LI");
     var textnode = document.createTextNode(text_in);
     node.appendChild(textnode);
@@ -664,4 +751,35 @@ async function  drawChartBinance()
 async function  drawChartMexc()
 {
   console.log(document.getElementById('symbolMexc').value+ ", " + document.getElementById('timeFrame').value);
+}
+var isF02 = false;
+var isF03 = false;
+var isF05 = false;
+var isOverSMA20 = false;
+var isOverSMA50 = false;
+var isBetweenSMA20andSMA50 = false;
+var isBetweenSMA50andSAM20 = false;
+var isOverSMA20andSMA50 = false;
+var isLowerSMA20andSMA50 = false;
+
+function checkBox()
+{
+  if(document.getElementById('fibo02').checked) isF02= true;
+  if(document.getElementById('fibo03').checked) isF03 = true;
+  if(document.getElementById('fibo05').checked) isF05 = true;
+  if(document.getElementById('sma20').checked) isOverSMA20 = true;
+  if(document.getElementById('sma50').checked) isOverSMA50 = true;
+  if(document.getElementById('lowerSMA50greaterSMA20').checked) isBetweenSMA20andSMA50 = true;
+  if(document.getElementById('lowerSMA20greaterSMA50').checked) isBetweenSMA50andSAM20 = true;
+  if(document.getElementById('greaterSMA20-50').checked) isOverSMA20andSMA50 = true;
+  if(document.getElementById('lowerSMA20-50').checked) isLowerSMA20andSMA50 = true;
+  console.log(isF02);
+  console.log(isF03 );
+  console.log(isF05 );
+  console.log(isOverSMA20 );
+  console.log(isOverSMA50 );
+  console.log(isBetweenSMA20andSMA50 );
+  console.log(isBetweenSMA50andSAM20 );
+  console.log(isOverSMA20andSMA50 );
+  console.log(isLowerSMA20andSMA50 );
 }
