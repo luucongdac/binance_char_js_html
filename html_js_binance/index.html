@@ -49,12 +49,23 @@
 	<input type="checkbox" id="lowerSMA20-50" name="box8" value="true">
 	<label for="box8">lower SMA20 and SMA50</label><br>
 	<br>
-	<button onclick="checkBox()">check</button>
+	<button onclick="stream()">check</button>
 	<br>
+
+	<span id="totalstreams"></span> streams tracked<br/>
+	Total traded base asset volume:<br/>
+	<div id="streams"></div>
+
 	<br>
 	<br>
 	<button onclick="getDataBarBinance()">check Binance</button>
-	<button onclick="getDataBarMexc()">check Mexc</button> <br>
+	<button onclick="getDataBarMexc()">check Mexc</button> <br> 
+	<br>
+	<br>
+	<span id="statusProgress"></span><br/>
+	<label for="progress">progress: </label>
+	<progress id ="progress" value="0" max="100"></progress>
+	
 	<br>
 	<h4>========> Binance coins:</h4>
 	<ul id="binanceCoin">

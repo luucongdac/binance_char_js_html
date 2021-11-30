@@ -424,6 +424,8 @@ async function getDataBarBinance() {
   console.log('=============>>>>>>> All Binance USDT coins: ' + allSymbolUSDT);
   changeText("---> Start: USDT",'binanceCoin');
   checkBox();
+  countBar = 0;
+  maxBar = allSymbolUSDT.length;
   for (var i = 0; i < allSymbolUSDT.length; i++) {
     var returnData = getBarInforBinance(allSymbolUSDT[i],document.getElementById('TimeFrameCheck').value,document.getElementById('numberOfBar').value);
     await sleep(document.getElementById('delayTime').value);
@@ -557,6 +559,9 @@ async function getBarInforBinance(marketSymbol, timeInterval, numberOfDatasets) 
     if(c > fibo_05)
       console.log('Binance default > 0.5: ' +marketSymbol );
     }
+    countBar +=1;
+    document.getElementById("progress").value = (countBar/maxBar)*100;
+    document.getElementById('statusProgress').innerText = countBar + "/" + maxBar; 
 }
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -565,6 +570,8 @@ function sleep(ms) {
 let allSymbolUSD_mexc = []
 let allSymbolUSDT_mexc = []
 let allSymbolBTC_mexc = []
+var countBar = 0;
+var maxBar = 0;
 
 async function getDataBarMexc() {
   delete allSymbolUSD_mexc;
@@ -587,6 +594,8 @@ async function getDataBarMexc() {
   }
   changeText("---> Start:",'mexcCoin');
   console.log('=============>>>>>>> All Mexc USDT coins: '+ ', total = ' +allSymbolUSDT_mexc.length + '-->' +allSymbolUSDT_mexc  );
+  countBar = 0;
+  maxBar = allSymbolUSDT_mexc.length;
   for (var i = 0; i < allSymbolUSDT_mexc.length; i++) {  
     var returnData = getBarInforMexc(allSymbolUSDT_mexc[i],document.getElementById('TimeFrameCheck').value,document.getElementById('numberOfBar').value);
     await sleep(document.getElementById('delayTime').value);
@@ -719,6 +728,10 @@ async function getBarInforMexc(marketSymbol, timeInterval, numberOfDatasets) {
     if(c > fibo_05)
       console.log('mexcCoin default > 0.5: ' +marketSymbol );
     }
+    countBar +=1;
+    document.getElementById("progress").value = (countBar/maxBar)*100;
+    document.getElementById('statusProgress').innerText = countBar + "/" + maxBar; 
+    
 }
 // Dac Luu <--
 
@@ -783,3 +796,60 @@ function checkBox()
   console.log(isOverSMA20andSMA50 );
   console.log(isLowerSMA20andSMA50 );
 }
+
+
+function stream()
+{
+  let streams = [
+    "ethbtc@miniTicker","bnbbtc@miniTicker","wavesbtc@miniTicker","bchabcbtc@miniTicker",
+    "bchsvbtc@miniTicker","xrpbtc@miniTicker","tusdbtc@miniTicker","eosbtc@miniTicker",
+    "trxbtc@miniTicker","ltcbtc@miniTicker","xlmbtc@miniTicker","bcptbtc@miniTicker",
+    "adabtc@miniTicker","zilbtc@miniTicker","xmrbtc@miniTicker","stratbtc@miniTicker",
+    "zecbtc@miniTicker","qkcbtc@miniTicker","neobtc@miniTicker","dashbtc@miniTicker","zrxbtc@miniTicker"
+  ];
+
+  let trackedStreams = [];
+
+  //let ws = new WebSocket("wss://stream.binance.com:9443/ws/" + streams.join('/'));
+  // https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=100
+  // wss://stream.binance.com:9443/ws/ethusdt@trade
+  let ws = new WebSocket("wss://stream.binance.com:9443/ws/ethusdt@kline_1d");
+
+  ws.onopen = function() {
+      console.log("Binance connected...");
+  };
+
+  ws.onmessage = function(evt) {
+    // try {
+    //   let msgs = JSON.parse(evt.data);
+    //   if (Array.isArray(msgs)) {
+    //     for (let msg of msgs) {
+    //       handleMessage(msg);
+    //     }
+    //   } else {
+    //     handleMessage(msgs)
+    //   }
+    // } catch (e) {
+    //   console.log('Unknown message: ' + evt.data, e);
+    // }
+    console.log(evt.data);
+    // ws.close();
+  }
+
+  ws.onclose = function() {
+    console.log("Binance disconnected");
+  }
+
+}
+function handleMessage(msg) {
+  const stream = msg.s;
+  if (trackedStreams.indexOf(stream) === -1) {
+    document.getElementById('streams').innerHTML += '<br/>' + stream + ': <span id="stream_' + stream + '"></span>';
+    trackedStreams.push(stream);
+    document.getElementById('totalstreams').innerText = trackedStreams.length;
+  }
+
+  document.getElementById('stream_' + stream).innerText = msg.v;
+}
+
+
