@@ -401,11 +401,15 @@ callApiAndPlot(marketSymbol=getDefaultMarketSymbol(),
 let allSymbolUSD = []
 let allSymbolUSDT = []
 let allSymbolBTC = []
+var historyDataBinance = [];
+
 // Dac Luu -->
 async function getDataBarBinance() {
   delete allSymbolUSD;
   delete allSymbolUSDT;
   delete allSymbolBTC;
+  delete historyDataBinance;
+
   deleteText("binanceCoin");
   var api_url = 'https://api.binance.com/api/v1/exchangeInfo'
   const response = await fetch(api_url);
@@ -422,23 +426,14 @@ async function getDataBarBinance() {
       allSymbolBTC.push(symbols[i].symbol);
   }
   console.log('=============>>>>>>> All Binance USDT coins: ' + allSymbolUSDT);
-  changeText("---> Start: USDT",'binanceCoin');
-  checkBox();
   countBar = 0;
   maxBar = allSymbolUSDT.length;
   for (var i = 0; i < allSymbolUSDT.length; i++) {
     var returnData = getBarInforBinance(allSymbolUSDT[i],document.getElementById('TimeFrameCheck').value,document.getElementById('numberOfBar').value);
     await sleep(document.getElementById('delayTime').value);
+    if(i>20) break;
   }
-  changeText("End <---",'binanceCoin');
-
-  // console.log('=============>>>>>>> All Binance BTC coins: ' + allSymbolBTC);
-  // changeText("---> Start: BTC",'binanceCoin');
-  // for (var i = 0; i < allSymbolBTC.length; i++) {
-  //   var returnData = getBarInforBinance(allSymbolBTC[i],document.getElementById('TimeFrameCheck').value,document.getElementById('numberOfBar').value);
-  //   await sleep(document.getElementById('delayTime').value);
-  // }
-  // changeText("End <---",'binanceCoin');
+  console.log("=============>>>>>>> All Binance USDT coins collected!");
 
 }
 async function getBarInforBinance(marketSymbol, timeInterval, numberOfDatasets) {
@@ -448,6 +443,39 @@ async function getBarInforBinance(marketSymbol, timeInterval, numberOfDatasets) 
                  + '&limit=' + numberOfDatasets;
   const response = await fetch(api_url);
   const apiData = await response.json();
+  historyDataBinance.push({apiData,marketSymbol});
+  updateBarprogress();
+}
+
+function getDataBarHistorycalSavingBinance(){
+  deleteText("binanceCoin");
+  checkBox();
+  console.log('=============>>>>>>> All Binance USDT coins: '+ ', total = ' +historyDataBinance.length + '-->' +historyDataBinance  );
+  changeText("---> Start:",'binanceCoin');
+  countBar = 0;
+  maxBar = historyDataBinance.length;
+  for(var i = 0; i <historyDataBinance.length; i++)
+  {
+    try
+    {
+      console.log("---> saved data: ("+ i + ") " + historyDataBinance[i].marketSymbol);//  + ': ' +historyDataMex[i].apiData.data );
+    }catch (error) {
+      console.error(error);
+    }
+  }
+  
+  for(var i = 0; i <historyDataBinance.length; i++)
+  {
+    try
+    {
+      HistorycalSavingBinance(historyDataBinance[i].apiData,historyDataBinance[i].marketSymbol);
+    }catch (error) {
+      console.error(error);
+    }
+  }
+  changeText("---> End:",'binanceCoin');
+}
+function HistorycalSavingBinance(apiData,marketSymbol){
   var timestamp = [];
   var openPrice = [];
   var highPrice = [];
@@ -559,10 +587,16 @@ async function getBarInforBinance(marketSymbol, timeInterval, numberOfDatasets) 
     if(c > fibo_05)
       console.log('Binance default > 0.5: ' +marketSymbol );
     }
-    countBar +=1;
-    document.getElementById("progress").value = (countBar/maxBar)*100;
-    document.getElementById('statusProgress').innerText = countBar + "/" + maxBar; 
+    if(isF02 === false && isF03 === false && isF05 === false)
+    {
+      if(c > fibo_05) changeText(leng+ ', [> 0.5]' + ' :  '+ marketSymbol,'binanceCoin');
+      else changeText(leng+ ', [< 0.5]' + ' :  '+ marketSymbol,'binanceCoin');
+    }
+    updateBarprogress();
 }
+
+
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -598,7 +632,7 @@ async function getDataBarMexc() {
   for (var i = 0; i < allSymbolUSDT_mexc.length; i++) {  
     var returnData = getBarInforMexc(allSymbolUSDT_mexc[i],document.getElementById('TimeFrameCheck').value,document.getElementById('numberOfBar').value);
     await sleep(document.getElementById('delayTime').value);
-    if(i>20) break;
+    // if(i>20) break;
   }
   console.log("=============>>>>>>> All Mexc USDT coins collected!");
 }
@@ -758,6 +792,11 @@ function HistorycalSavingMexc(apiData,marketSymbol){
     }
     if(c > fibo_05)
       console.log('mexcCoin default > 0.5: ' +marketSymbol );
+    }
+    if(isF02 === false && isF03 === false && isF05 === false)
+    {
+      if(c > fibo_05) changeText(leng+ ', [> 0.5]' + ' :  '+ marketSymbol,'mexcCoin');
+      else changeText(leng+ ', [< 0.5]' + ' :  '+ marketSymbol,'mexcCoin');
     }
     updateBarprogress();
 
