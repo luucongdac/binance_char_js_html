@@ -23,7 +23,7 @@
 		}
 	</style>
 
-	Number of bar: <input type="number" id="numberOfBar" value=200>
+	Number of bar: <input type="number" id="numberOfBar" value=1000>
 	Time frame check: <input type="text" id="TimeFrameCheck" value="1d">
 	Request RestAPT delay ms: <input type="number" id="delayTime" value=100>
 	<br>
@@ -49,7 +49,7 @@
 	<input type="checkbox" id="lowerSMA20-50" name="box8" value="true">
 	<label for="box8">lower SMA20 and SMA50</label><br>
 	<br>
-	<button onclick="stream()">check</button>
+	<button onclick="checkBox()">load check Box</button>
 	<br>
 
 	<span id="totalstreams"></span> streams tracked<br/>
@@ -58,8 +58,10 @@
 
 	<br>
 	<br>
-	<button onclick="getDataBarBinance()">check Binance</button>
-	<button onclick="getDataBarMexc()">check Mexc</button> <br> 
+	<button onclick="getDataBarBinance()">get first time Binance</button>
+	<button onclick="getDataBarMexc()">get first time Mexc</button> <br> <br>
+	<button onclick="getDataBarHistorycalSavingBinance()">check historical saving Binance</button>
+	<button onclick="getDataBarHistorycalSavingMexc()">check historical saving Mexc</button> <br> 
 	<br>
 	<br>
 	<span id="statusProgress"></span><br/>

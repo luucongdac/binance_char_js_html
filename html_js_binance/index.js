@@ -566,7 +566,7 @@ async function getBarInforBinance(marketSymbol, timeInterval, numberOfDatasets) 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
-// =============> for merc
+// ===============================================================================> for merc
 let allSymbolUSD_mexc = []
 let allSymbolUSDT_mexc = []
 let allSymbolBTC_mexc = []
@@ -577,8 +577,8 @@ async function getDataBarMexc() {
   delete allSymbolUSD_mexc;
   delete allSymbolUSDT_mexc;
   delete allSymbolBTC_mexc;
-  deleteText("mexcCoin");
-  checkBox();
+  delete historyDataMex;
+
   // var api_url = 'https://www.mexc.com/open/api/v2/market/api_default_symbols'
   var api_url = 'https://www.mexc.com/open/api/v2/market/symbols'
   const response = await fetch(api_url);
@@ -592,17 +592,17 @@ async function getDataBarMexc() {
       allSymbolUSDT_mexc.push(symbols[i].symbol);
     }
   }
-  changeText("---> Start:",'mexcCoin');
   console.log('=============>>>>>>> All Mexc USDT coins: '+ ', total = ' +allSymbolUSDT_mexc.length + '-->' +allSymbolUSDT_mexc  );
   countBar = 0;
   maxBar = allSymbolUSDT_mexc.length;
   for (var i = 0; i < allSymbolUSDT_mexc.length; i++) {  
     var returnData = getBarInforMexc(allSymbolUSDT_mexc[i],document.getElementById('TimeFrameCheck').value,document.getElementById('numberOfBar').value);
     await sleep(document.getElementById('delayTime').value);
+    if(i>20) break;
   }
-  changeText("---> End:",'mexcCoin');
+  console.log("=============>>>>>>> All Mexc USDT coins collected!");
 }
-
+var historyDataMex = [];
 async function getBarInforMexc(marketSymbol, timeInterval, numberOfDatasets) {
   // console.log('==============> begin: ' + marketSymbol);
   var api_url = 'https://www.mexc.com/open/api/v2/market/kline?symbol=' + marketSymbol
@@ -610,7 +610,38 @@ async function getBarInforMexc(marketSymbol, timeInterval, numberOfDatasets) {
                  + '&limit=' + numberOfDatasets;
   const response = await fetch(api_url);
   const apiData = await response.json();
-
+  historyDataMex.push({apiData,marketSymbol});
+  updateBarprogress();
+}
+function getDataBarHistorycalSavingMexc(){
+  deleteText("mexcCoin");
+  checkBox();
+  console.log('=============>>>>>>> All Mexc USDT coins: '+ ', total = ' +allSymbolUSDT_mexc.length + '-->' +allSymbolUSDT_mexc  );
+  changeText("---> Start:",'mexcCoin');
+  countBar = 0;
+  maxBar = allSymbolUSDT_mexc.length;
+  for(var i = 0; i <historyDataMex.length; i++)
+  {
+    try
+    {
+      console.log("---> saved data: ("+ i + ") " + historyDataMex[i].marketSymbol);//  + ': ' +historyDataMex[i].apiData.data );
+    }catch (error) {
+      console.error(error);
+    }
+  }
+  
+  for(var i = 0; i <historyDataMex.length; i++)
+  {
+    try
+    {
+      HistorycalSavingMexc(historyDataMex[i].apiData,historyDataMex[i].marketSymbol);
+    }catch (error) {
+      console.error(error);
+    }
+  }
+  changeText("---> End:",'mexcCoin');
+}
+function HistorycalSavingMexc(apiData,marketSymbol){
   var timestamp = [];
   var openPrice = [];
   var highPrice = [];
@@ -728,13 +759,20 @@ async function getBarInforMexc(marketSymbol, timeInterval, numberOfDatasets) {
     if(c > fibo_05)
       console.log('mexcCoin default > 0.5: ' +marketSymbol );
     }
-    countBar +=1;
-    document.getElementById("progress").value = (countBar/maxBar)*100;
-    document.getElementById('statusProgress').innerText = countBar + "/" + maxBar; 
-    
+    updateBarprogress();
+
 }
 // Dac Luu <--
-
+function resetBarprogress()
+{
+  countBar = 0;
+}
+function updateBarprogress()
+{
+  countBar +=1;
+  document.getElementById("progress").value = (countBar/maxBar)*100;
+  document.getElementById('statusProgress').innerText = countBar + "/" + maxBar; 
+}
 function deleteText(id)
 {
   var parElement = document.getElementById(id);
@@ -777,6 +815,16 @@ var isLowerSMA20andSMA50 = false;
 
 function checkBox()
 {
+  isF02 = false;
+  isF03 = false;
+  isF05 = false;
+  isOverSMA20 = false;
+  isOverSMA50 = false;
+  isBetweenSMA20andSMA50 = false;
+  isBetweenSMA50andSAM20 = false;
+  isOverSMA20andSMA50 = false;
+  isLowerSMA20andSMA50 = false;
+
   if(document.getElementById('fibo02').checked) isF02= true;
   if(document.getElementById('fibo03').checked) isF03 = true;
   if(document.getElementById('fibo05').checked) isF05 = true;
@@ -786,6 +834,7 @@ function checkBox()
   if(document.getElementById('lowerSMA20greaterSMA50').checked) isBetweenSMA50andSAM20 = true;
   if(document.getElementById('greaterSMA20-50').checked) isOverSMA20andSMA50 = true;
   if(document.getElementById('lowerSMA20-50').checked) isLowerSMA20andSMA50 = true;
+  console.log("===> start check selected box");
   console.log(isF02);
   console.log(isF03 );
   console.log(isF05 );
@@ -795,6 +844,7 @@ function checkBox()
   console.log(isBetweenSMA50andSAM20 );
   console.log(isOverSMA20andSMA50 );
   console.log(isLowerSMA20andSMA50 );
+  console.log("end check selected box <===");
 }
 
 
