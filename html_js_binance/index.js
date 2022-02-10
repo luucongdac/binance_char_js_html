@@ -431,7 +431,7 @@ async function getDataBarBinance() {
   for (var i = 0; i < allSymbolUSDT.length; i++) {
     var returnData = getBarInforBinance(allSymbolUSDT[i],document.getElementById('TimeFrameCheck').value,document.getElementById('numberOfBar').value);
     await sleep(document.getElementById('delayTime').value);
-    if(i>20) break;
+    // if(i>20) break;
   }
   console.log("=============>>>>>>> All Binance USDT coins collected!");
 
