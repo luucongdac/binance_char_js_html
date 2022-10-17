@@ -24,16 +24,16 @@
 	</style>
 
 	Number of bar: <input type="number" id="numberOfBar" value=1000>
-	Time frame check: <input type="text" id="TimeFrameCheck" value="1d">
+	Time frame check: <input type="text" id="TimeFrameCheck" value="4h">
 	Request RestAPT delay ms: <input type="number" id="delayTime" value=150>
-	limit symbol<input type="number" id="limitSymbol" value=30>
+	limit symbol<input type="number" id="limitSymbol" value=1000>
 	<br>
 	Number min bar need to check: <input type="number" id="numberMinOfBar" value=27>
 	Number max bar need to check: <input type="number" id="numberMaxOfBar" value=1200>
 	<br>
-	<input type="checkbox" id="fibo02" name="box1" value="true" checked>
+	<input type="checkbox" id="fibo02" name="box1" value="true" >
 	<label for="box1">Lower fibo 0.2</label><br>
-	<input type="checkbox" id="fibo03" name="box2" value="true" checked>
+	<input type="checkbox" id="fibo03" name="box2" value="true" >
 	<label for="box2">Lower fibo 0.3</label><br>
 	<input type="checkbox" id="fibo05" name="box3" value="true">
 	<label for="box3">Lower fibo 0.5</label><br>
@@ -50,11 +50,11 @@
 	<input type="checkbox" id="lowerSMA20-50" name="box8" value="true">
 	<label for="box8">lower SMA20 and SMA50</label><br>
 	<br>
-	<input type="checkbox" id="RatioUltraVolume" name="box9" value="true">
+	<input type="checkbox" id="RatioUltraVolume" name="box9" value="true" checked>
 	<label for="box9">Ultra</label><br>	
-	<input type="checkbox" id="RatioVeryHighVolume" name="box10" value="true">
+	<input type="checkbox" id="RatioVeryHighVolume" name="box10" value="true" checked>
 	<label for="box10">Very High</label><br>	
-	<input type="checkbox" id="RatioHighVolume" name="box11" value="true">
+	<input type="checkbox" id="RatioHighVolume" name="box11" value="true" checked>
 	<label for="box11">High</label><br>	
 	<input type="checkbox" id="RatioNormalVolume" name="box12" value="true">
 	<label for="box12">Normal</label><br>	
@@ -62,6 +62,13 @@
 	<label for="box13">Low</label><br>	
 	<input type="checkbox" id="RatioVeryLowVolume" name="box14" value="true">
 	<label for="box14">Very Low</label><br>	
+	<br>	
+	<input type="checkbox" id="Bar0" name="box15" value="true" checked>
+	<label for="box15">Bar 0</label><br>	
+	<input type="checkbox" id="Bar1" name="box16" value="true" checked>
+	<label for="box16">Bar 1</label><br>	
+	<input type="checkbox" id="Bar2" name="box17" value="true" checked>
+	<label for="box17">Bar 2</label><br>	
 	<br>	
 	<button onclick="checkBox()">load check Box</button>
 	<br>

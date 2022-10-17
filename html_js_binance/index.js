@@ -483,6 +483,7 @@ function HistorycalSavingBinance(apiData,marketSymbol){
   var lowPrice = [];
   var closePrice = [];
   var volume = [];
+  checkBox(); //updating checked box
   
   for (var index in apiData){
     timestamp[index]  = new Date(apiData[index][0]);
@@ -514,7 +515,7 @@ function HistorycalSavingBinance(apiData,marketSymbol){
         highes = parseFloat(highPrice[i]);
       if(parseFloat(lowPrice[i]) < lowest)
         lowest = parseFloat(lowPrice[i]);
-      // console.log(i +': ' +  marketSymbol+', ' +timestamp[i] +', ' + openPrice[i]+', ' + closePrice[i]+', ' + highPrice[i]+', ' + lowPrice[i]);
+      //console.log(i +': ' +  marketSymbol+', ' +timestamp[i] +', ' + openPrice[i]+', ' + closePrice[i]+', ' + highPrice[i]+', ' + lowPrice[i] +', ' + volume[i]);
     }
     // calculate fibo value
     fibo_02 = lowest + 0.236*(highes-lowest);
@@ -595,10 +596,14 @@ function HistorycalSavingBinance(apiData,marketSymbol){
     var lowVolumeMin2         = smaV24_2 * ratioLowVolume         ;
     var veryLowVolumeMin2     = smaV24_2 * ratioVeryLowVolume     ;	
     
-    var vol  = parseFloat(volume[currentIndex])
-    var vol1 = parseFloat(volume[currentIndex-1])
-    var vol2 = parseFloat(volume[currentIndex-2])
+    var vol  = parseFloat(volume[currentIndex])   ;
+    var vol1 = parseFloat(volume[currentIndex-1]) ;
+    var vol2 = parseFloat(volume[currentIndex-2]) ;
 
+    var cap  = parseInt((parseFloat(volume[currentIndex])   * parseFloat(closePrice[currentIndex])  )/1000000);
+    var cap1 = parseInt((parseFloat(volume[currentIndex-1]) * parseFloat(closePrice[currentIndex-1]))/1000000);
+    var cap2 = parseInt((parseFloat(volume[currentIndex-2]) * parseFloat(closePrice[currentIndex-2]))/1000000);
+	
     var is_volUltraHigh        = vol >= ultraHighVolumeMin                                     ;
     var is_volVeryHigh         = vol >= veryHighVolumeMin   && vol < ultraHighVolumeMin     ;
     var is_volHigh             = vol >= highVolumeMin       && vol < veryHighVolumeMin      ;
@@ -625,27 +630,33 @@ function HistorycalSavingBinance(apiData,marketSymbol){
     var c = closePrice[currentIndex];
     var leng = apiData.length;
     // console.log(marketSymbol + ": " + smaV24 + ", " + vol);
-    if(isRatioUltraVolume   && is_volUltraHigh) changeText(leng +  '\t [Bar 0] [Ultra]' + '\t'+ marketSymbol,'binanceCoin');
-    if(isRatioVeryHighVolume&& is_volVeryHigh ) changeText(leng +  '\t [Bar 0] [Very H]' + '\t'+ marketSymbol,'binanceCoin');
-    if(isRatioHighVolume    && is_volHigh     ) changeText(leng +  '\t [Bar 0] [High]' + '\t'+ marketSymbol,'binanceCoin');
-    if(isRatioNormalVolume  && is_volNormal   ) changeText(leng +  '\t [Bar 0] [Normal]' + '\t'+ marketSymbol,'binanceCoin');
-    if(isRatioLowVolume     && is_volLow      ) changeText(leng +  '\t [Bar 0] [Low]' + '\t'+ marketSymbol,'binanceCoin');
-    if(isRatioVeryLowVolume && is_volVeryLow  )	changeText(leng +  '\t [Bar 0] [Very L]' + '\t'+ marketSymbol,'binanceCoin');
-
-    if(isRatioUltraVolume   && is_volUltraHigh1) changeText(leng + '\t [Bar 1] [Ultra]' + '\t'+ marketSymbol,'binanceCoin');
-    if(isRatioVeryHighVolume&& is_volVeryHigh1 ) changeText(leng + '\t [Bar 1] [Very H]' + '\t'+ marketSymbol,'binanceCoin');
-    if(isRatioHighVolume    && is_volHigh1     ) changeText(leng + '\t [Bar 1] [High]' + '\t'+ marketSymbol,'binanceCoin');
-    if(isRatioNormalVolume  && is_volNormal1   ) changeText(leng + '\t [Bar 1] [Normal]' + '\t'+ marketSymbol,'binanceCoin');
-    if(isRatioLowVolume     && is_volLow1      ) changeText(leng + '\t [Bar 1] [Low]' + '\t'+ marketSymbol,'binanceCoin');
-    if(isRatioVeryLowVolume && is_volVeryLow1  ) changeText(leng + '\t [Bar 1] [Very L]' + '\t'+ marketSymbol,'binanceCoin');
-
-    if(isRatioUltraVolume   && is_volUltraHigh2) changeText(leng + '\t [Bar 2] [Ultra]' + '\t'+ marketSymbol,'binanceCoin');
-    if(isRatioVeryHighVolume&& is_volVeryHigh2 ) changeText(leng + '\t [Bar 2] [Very H]' + '\t'+ marketSymbol,'binanceCoin');
-    if(isRatioHighVolume    && is_volHigh2     ) changeText(leng + '\t [Bar 2] [High]' + '\t'+ marketSymbol,'binanceCoin');
-    if(isRatioNormalVolume  && is_volNormal2   ) changeText(leng + '\t [Bar 2] [Normal]' + '\t'+ marketSymbol,'binanceCoin');
-    if(isRatioLowVolume     && is_volLow2      ) changeText(leng + '\t [Bar 2] [Low]' + '\t'+ marketSymbol,'binanceCoin');
-    if(isRatioVeryLowVolume && is_volVeryLow2  ) changeText(leng + '\t [Bar 2] [Very L]' + '\t'+ marketSymbol,'binanceCoin');
-
+    if(document.getElementById('Bar0').checked)
+    {
+      if(isRatioUltraVolume   && is_volUltraHigh) changeText(leng +  '\t [Bar 0] [Ultra]'  + '\t' + '[' + cap + 'M $]'  + '\t'+ marketSymbol,'binanceCoin');
+      if(isRatioVeryHighVolume&& is_volVeryHigh ) changeText(leng +  '\t [Bar 0] [Very H]' + '\t' + '[' + cap + 'M $]'  + '\t'+ marketSymbol,'binanceCoin');
+      if(isRatioHighVolume    && is_volHigh     ) changeText(leng +  '\t [Bar 0] [High]'   + '\t' + '[' + cap + 'M $]'  + '\t'+ marketSymbol,'binanceCoin');
+      if(isRatioNormalVolume  && is_volNormal   ) changeText(leng +  '\t [Bar 0] [Normal]' + '\t' + '[' + cap + 'M $]'  + '\t'+ marketSymbol,'binanceCoin');
+      if(isRatioLowVolume     && is_volLow      ) changeText(leng +  '\t [Bar 0] [Low]'    + '\t' + '[' + cap + 'M $]'  + '\t'+ marketSymbol,'binanceCoin');
+      if(isRatioVeryLowVolume && is_volVeryLow  ) changeText(leng +  '\t [Bar 0] [Very L]' + '\t' + '[' + cap + 'M $]'  + '\t'+ marketSymbol,'binanceCoin');
+    }
+    if(document.getElementById('Bar1').checked)
+    {    
+      if(isRatioUltraVolume   && is_volUltraHigh1) changeText(leng + '\t [Bar 1] [Ultra]'  + '\t' + '[' + cap1 + 'M $]'  + '\t'+ marketSymbol,'binanceCoin');
+      if(isRatioVeryHighVolume&& is_volVeryHigh1 ) changeText(leng + '\t [Bar 1] [Very H]' + '\t' + '[' + cap1 + 'M $]'  + '\t'+ marketSymbol,'binanceCoin');
+      if(isRatioHighVolume    && is_volHigh1     ) changeText(leng + '\t [Bar 1] [High]'   + '\t' + '[' + cap1 + 'M $]'  + '\t'+ marketSymbol,'binanceCoin');
+      if(isRatioNormalVolume  && is_volNormal1   ) changeText(leng + '\t [Bar 1] [Normal]' + '\t' + '[' + cap1 + 'M $]'  + '\t'+ marketSymbol,'binanceCoin');
+      if(isRatioLowVolume     && is_volLow1      ) changeText(leng + '\t [Bar 1] [Low]'    + '\t' + '[' + cap1 + 'M $]'  + '\t'+ marketSymbol,'binanceCoin');
+      if(isRatioVeryLowVolume && is_volVeryLow1  ) changeText(leng + '\t [Bar 1] [Very L]' + '\t' + '[' + cap1 + 'M $]'  + '\t'+ marketSymbol,'binanceCoin');
+    }
+    if(document.getElementById('Bar2').checked)
+    {    
+      if(isRatioUltraVolume   && is_volUltraHigh2) changeText(leng + '\t [Bar 2] [Ultra]'  + '\t' + '[' + cap2 + 'M $]' + '\t'+ marketSymbol,'binanceCoin');
+      if(isRatioVeryHighVolume&& is_volVeryHigh2 ) changeText(leng + '\t [Bar 2] [Very H]' + '\t' + '[' + cap2 + 'M $]' + '\t'+ marketSymbol,'binanceCoin');
+      if(isRatioHighVolume    && is_volHigh2     ) changeText(leng + '\t [Bar 2] [High]'   + '\t' + '[' + cap2 + 'M $]' + '\t'+ marketSymbol,'binanceCoin');
+      if(isRatioNormalVolume  && is_volNormal2   ) changeText(leng + '\t [Bar 2] [Normal]' + '\t' + '[' + cap2 + 'M $]' + '\t'+ marketSymbol,'binanceCoin');
+      if(isRatioLowVolume     && is_volLow2      ) changeText(leng + '\t [Bar 2] [Low]'    + '\t' + '[' + cap2 + 'M $]' + '\t'+ marketSymbol,'binanceCoin');
+      if(isRatioVeryLowVolume && is_volVeryLow2  ) changeText(leng + '\t [Bar 2] [Very L]' + '\t' + '[' + cap2 + 'M $]' + '\t'+ marketSymbol,'binanceCoin');
+    }
     if(isF02 && c < fibo_02)
     {
       if(!isOverSMA20 && !isOverSMA50 && ! isBetweenSMA20andSMA50 && ! isBetweenSMA50andSAM20 && ! isOverSMA20andSMA50 && !isLowerSMA20andSMA50)
