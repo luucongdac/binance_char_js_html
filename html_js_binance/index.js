@@ -568,7 +568,7 @@ function HistorycalSavingBinance(apiData,marketSymbol){
       {
         smaV24_1 = smaV24_1 + parseFloat(volume[i]);
       }  
-      smaV24_1 = smaV24_1/25;
+      smaV24_1 = smaV24_1/24;
     }
 	
     if(apiData.length > 26)
@@ -577,7 +577,7 @@ function HistorycalSavingBinance(apiData,marketSymbol){
       {
         smaV24_2 = smaV24_2 + parseFloat(volume[i]);
       }  
-      smaV24_2 = smaV24_2/26;
+      smaV24_2 = smaV24_2/24;
     }
 	
     var ratioUltraVolume =      2.272;
@@ -897,7 +897,7 @@ function HistorycalSavingMexc(apiData,marketSymbol){
       {
         smaV24_1 = smaV24_1 + parseFloat(volume[i]);
       }  
-      smaV24_1 = smaV24_1/25;
+      smaV24_1 = smaV24_1/24;
     }
 	
     if(_length > 26)
@@ -906,7 +906,7 @@ function HistorycalSavingMexc(apiData,marketSymbol){
       {
         smaV24_2 = smaV24_2 + parseFloat(volume[i]);
       }  
-      smaV24_2 = smaV24_2/26;
+      smaV24_2 = smaV24_2/24;
     }
 	
     var ratioUltraVolume =      2.272;
