@@ -24,9 +24,28 @@
 	</style>
 
 	Number of bar: <input type="number" id="numberOfBar" value=1000>
-	Time frame check: <input type="text" id="TimeFrameCheck" value="1d">
+	<!-- Time frame check: <input type="text" id="TimeFrameCheck" value="1d"> -->
+	<label for="TimeFrameCheck">Time frame check:</label>
+	<select id="TimeFrameCheck"> 
+		<!-- 30m,1h,4h,8h,1d,1w,1M -->
+		<option value="1M">1M</option>
+		<option value="1w">1w</option>
+		<option value="1d" selected>1d</option>
+		<option value="8h">8h</option>
+		<option value="4h">4h</option>
+		<option value="1h">1h</option>
+		<option value="30m">30m</option>
+		<option value="15m" >15m</option>
+		<option value="5m" >5m</option>
+		<option value="1m" >1m</option>
+	</select>
 	Request RestAPT delay ms: <input type="number" id="delayTime" value=150>
-	limit symbol<input type="number" id="limitSymbol" value=9999>
+	<!-- limit symbol<input type="number" id="limitSymbol" value=20> -->
+	<label for="limitSymbol">Limit symbol:</label>
+	<select id="limitSymbol">
+		<option value=9999 selected>UnLimited</option>
+		<option value=22 >SmallTest - 22</option>
+	</select>	
 	<br>
 	Number min bar need to check: <input type="number" id="numberMinOfBar" value=22>
 	Number max bar need to check: <input type="number" id="numberMaxOfBar" value=10000>
@@ -35,9 +54,9 @@
 	<label for="box1">Lower fibo 0.2</label><br>
 	<input type="checkbox" id="fibo03" name="box2" value="true" >
 	<label for="box2">Lower fibo 0.3</label><br>
-	<input type="checkbox" id="fibo05" name="box3" value="true">
+	<input type="checkbox" id="fibo05" name="box3" value="true" checked>
 	<label for="box3">Lower fibo 0.5</label><br>
-	<input type="checkbox" id="sma20" name="box4" value="true">
+	<input type="checkbox" id="sma20" name="box4" value="true" >
 	<label for="box4">Upper SMA20</label><br>
 	<input type="checkbox" id="sma50" name="box5" value="true">
 	<label for="box5">Upper SMA50</label><br>
@@ -45,9 +64,9 @@
 	<label for="box5">[SMA20 -> SMA50]</label><br>
 	<input type="checkbox" id="lowerSMA20greaterSMA50" name="box6" value="true" >
 	<label for="box6">[SMA50 -> SMA20]</label><br>
-	<input type="checkbox" id="greaterSMA20-50" name="box7" value="true" >
+	<input type="checkbox" id="greaterSMA20-50" name="box7" value="true" checked>
 	<label for="box7">greater SMA20 and SMA50</label><br>
-	<input type="checkbox" id="lowerSMA20-50" name="box8" value="true">
+	<input type="checkbox" id="lowerSMA20-50" name="box8" value="true" >
 	<label for="box8">lower SMA20 and SMA50</label><br>
 	<br>
 	<input type="checkbox" id="RatioUltraVolume" name="box9" value="true" checked>
@@ -63,11 +82,11 @@
 	<input type="checkbox" id="RatioVeryLowVolume" name="box14" value="true">
 	<label for="box14">Very Low</label><br>	
 	<br>	
-	<input type="checkbox" id="Bar0" name="box15" value="true" checked>
+	<input type="checkbox" id="Bar0" name="box15" value="true" >
 	<label for="box15">Bar 0</label><br>	
 	<input type="checkbox" id="Bar1" name="box16" value="true" checked>
 	<label for="box16">Bar 1</label><br>	
-	<input type="checkbox" id="Bar2" name="box17" value="true" checked>
+	<input type="checkbox" id="Bar2" name="box17" value="true" >
 	<label for="box17">Bar 2</label><br>	
 	<br>	
 	<button onclick="checkBox()">load check Box</button>
@@ -84,6 +103,9 @@
 	<button onclick="getDataBarHistorycalSavingBinance()">check historical saving Binance</button>
 	<button onclick="getDataBarHistorycalSavingMexc()">check historical saving Mexc</button> <br> 
 	<br>
+	<!-- HTML: -->
+	<p id="volumeAverageLength" style="color: red; font-weight: bold; font-size: 30px;">Length of vol average: <span id="averageValue"></span></p>
+
 	<br>
 	<span id="statusProgress"></span><br/>
 	<label for="progress">progress: </label>

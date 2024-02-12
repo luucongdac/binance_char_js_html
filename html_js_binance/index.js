@@ -12,6 +12,41 @@ function formatNumber(value) {
   }
 }
 
+var var_cal_length_vol_average = 24;
+function cal_length_vol_average() {
+  // Lấy thẻ select
+  const selectElement = document.getElementById('TimeFrameCheck');
+  const selectedValue = selectElement.value;
+      let variableValue;
+      switch(selectedValue) {
+          case '1M':
+              variableValue = 24;
+              break;
+          case '1w':
+              variableValue = 104;
+              break;
+          case '1d':
+              variableValue = 60;
+              break;
+          case '1h':
+              variableValue = 48;
+              break;  
+          case '15m':
+              variableValue = 36;
+              break; 
+          case '5m':
+              variableValue = 24;
+              break;                                         
+          default:
+              // Mặc định giá trị là 1 nếu không phù hợp
+              variableValue = 24;
+              break;
+      }
+      var_cal_length_vol_average = variableValue;
+      // In ra giá trị của biến
+      console.log('Variable value:', variableValue);
+}
+
 // ================ SECTION 1: Default values, data structures and related functions ================
 
 function getDefaultMarketSymbol() {
@@ -461,6 +496,8 @@ async function getBarInforBinance(marketSymbol, timeInterval, numberOfDatasets) 
 }
 
 function getDataBarHistorycalSavingBinance(){
+  checkBox()
+  checkBox()
   deleteText("binanceCoin");
   checkBox();
   console.log('=============>>>>>>> All Binance USDT coins: '+ ', total = ' +historyDataBinance.length + '-->' +historyDataBinance  );
@@ -496,7 +533,7 @@ function HistorycalSavingBinance(apiData,marketSymbol){
   var closePrice = [];
   var volume = [];
   checkBox(); //updating checked box
-  
+  cal_length_vol_average();
   for (var index in apiData){
     timestamp[index]  = new Date(apiData[index][0]);
 	// console.log("==== debug =======" + marketSymbol);
@@ -553,31 +590,31 @@ function HistorycalSavingBinance(apiData,marketSymbol){
     }
     // ==============> define Fibo volume    
     //sma24 in volume
-    if(apiData.length > 24)
+    if(apiData.length > var_cal_length_vol_average)
     {
-      for(var i = currentIndex; i >  currentIndex - 24; i--)
+      for(var i = currentIndex; i >  currentIndex - var_cal_length_vol_average; i--)
       {
         smaV24 = smaV24 + parseFloat(volume[i]);
       }  
-      smaV24 = smaV24/24;
+      smaV24 = smaV24/var_cal_length_vol_average;
     }
 
-    if(apiData.length > 25)
+    if(apiData.length > var_cal_length_vol_average + 1 )
     {
-      for(var i = currentIndex-1; i >  currentIndex - 25; i--)
+      for(var i = currentIndex-1; i >  currentIndex - (var_cal_length_vol_average+1); i--)
       {
         smaV24_1 = smaV24_1 + parseFloat(volume[i]);
       }  
-      smaV24_1 = smaV24_1/24;
+      smaV24_1 = smaV24_1/var_cal_length_vol_average;
     }
 	
-    if(apiData.length > 26)
+    if(apiData.length > var_cal_length_vol_average + 2)
     {
-      for(var i = currentIndex-2; i >  currentIndex - 26; i--)
+      for(var i = currentIndex-2; i >  currentIndex - (var_cal_length_vol_average+2); i--)
       {
         smaV24_2 = smaV24_2 + parseFloat(volume[i]);
       }  
-      smaV24_2 = smaV24_2/24;
+      smaV24_2 = smaV24_2/var_cal_length_vol_average;
     }
 	
     var ratioUltraVolume =      2.272;
@@ -642,32 +679,35 @@ function HistorycalSavingBinance(apiData,marketSymbol){
     var c = closePrice[currentIndex];
     var leng = apiData.length;
     // console.log(marketSymbol + ": " + smaV24 + ", " + vol);
-    if(document.getElementById('Bar0').checked)
+    if(smaV24 != 0 && smaV24_1 != 0 && smaV24_2 != 0)
     {
-      if(isRatioUltraVolume   && is_volUltraHigh) changeText('[' + leng +  ']' +  '\t [0] [Ultra]'  + '\t' + '[' + cap + ' $]'  + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
-      if(isRatioVeryHighVolume&& is_volVeryHigh ) changeText('[' + leng +  ']' +  '\t [0] [Very H]' + '\t' + '[' + cap + ' $]'  + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
-      if(isRatioHighVolume    && is_volHigh     ) changeText('[' + leng +  ']' +  '\t [0] [High]'   + '\t' + '[' + cap + ' $]'  + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
-      if(isRatioNormalVolume  && is_volNormal   ) changeText('[' + leng +  ']' +  '\t [0] [Normal]' + '\t' + '[' + cap + ' $]'  + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
-      if(isRatioLowVolume     && is_volLow      ) changeText('[' + leng +  ']' +  '\t [0] [Low]'    + '\t' + '[' + cap + ' $]'  + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
-      if(isRatioVeryLowVolume && is_volVeryLow  ) changeText('[' + leng +  ']' +  '\t [0] [Very L]' + '\t' + '[' + cap + ' $]'  + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
-    }
-    if(document.getElementById('Bar1').checked)
-    {    
-      if(isRatioUltraVolume   && is_volUltraHigh1) changeText('[' + leng +  ']' +  '\t [1] [Ultra]'  + '\t' + '[' + cap1 + ' $]'  + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
-      if(isRatioVeryHighVolume&& is_volVeryHigh1 ) changeText('[' + leng +  ']' +  '\t [1] [Very H]' + '\t' + '[' + cap1 + ' $]'  + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
-      if(isRatioHighVolume    && is_volHigh1     ) changeText('[' + leng +  ']' +  '\t [1] [High]'   + '\t' + '[' + cap1 + ' $]'  + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
-      if(isRatioNormalVolume  && is_volNormal1   ) changeText('[' + leng +  ']' +  '\t [1] [Normal]' + '\t' + '[' + cap1 + ' $]'  + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
-      if(isRatioLowVolume     && is_volLow1      ) changeText('[' + leng +  ']' +  '\t [1] [Low]'    + '\t' + '[' + cap1 + ' $]'  + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
-      if(isRatioVeryLowVolume && is_volVeryLow1  ) changeText('[' + leng +  ']' +  '\t [1] [Very L]' + '\t' + '[' + cap1 + ' $]'  + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
-    }
-    if(document.getElementById('Bar2').checked)
-    {    
-      if(isRatioUltraVolume   && is_volUltraHigh2) changeText('[' + leng +  ']' +  '\t [1] [Ultra]'  + '\t' + '[' + cap2 + ' $]' + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
-      if(isRatioVeryHighVolume&& is_volVeryHigh2 ) changeText('[' + leng +  ']' +  '\t [2] [Very H]' + '\t' + '[' + cap2 + ' $]' + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
-      if(isRatioHighVolume    && is_volHigh2     ) changeText('[' + leng +  ']' +  '\t [2] [High]'   + '\t' + '[' + cap2 + ' $]' + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
-      if(isRatioNormalVolume  && is_volNormal2   ) changeText('[' + leng +  ']' +  '\t [2] [Normal]' + '\t' + '[' + cap2 + ' $]' + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
-      if(isRatioLowVolume     && is_volLow2      ) changeText('[' + leng +  ']' +  '\t [2] [Low]'    + '\t' + '[' + cap2 + ' $]' + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
-      if(isRatioVeryLowVolume && is_volVeryLow2  ) changeText('[' + leng +  ']' +  '\t [2] [Very L]' + '\t' + '[' + cap2 + ' $]' + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
+      if(document.getElementById('Bar0').checked)
+      {
+        if(isRatioUltraVolume   && is_volUltraHigh) changeText('[' + leng +  ']' +  '\t [0] [Ultra]'  + '\t' + '[' + cap + ' $]'  + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
+        if(isRatioVeryHighVolume&& is_volVeryHigh ) changeText('[' + leng +  ']' +  '\t [0] [Very H]' + '\t' + '[' + cap + ' $]'  + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
+        if(isRatioHighVolume    && is_volHigh     ) changeText('[' + leng +  ']' +  '\t [0] [High]'   + '\t' + '[' + cap + ' $]'  + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
+        if(isRatioNormalVolume  && is_volNormal   ) changeText('[' + leng +  ']' +  '\t [0] [Normal]' + '\t' + '[' + cap + ' $]'  + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
+        if(isRatioLowVolume     && is_volLow      ) changeText('[' + leng +  ']' +  '\t [0] [Low]'    + '\t' + '[' + cap + ' $]'  + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
+        if(isRatioVeryLowVolume && is_volVeryLow  ) changeText('[' + leng +  ']' +  '\t [0] [Very L]' + '\t' + '[' + cap + ' $]'  + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
+      }
+      if(document.getElementById('Bar1').checked)
+      {    
+        if(isRatioUltraVolume   && is_volUltraHigh1) changeText('[' + leng +  ']' +  '\t [1] [Ultra]'  + '\t' + '[' + cap1 + ' $]'  + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
+        if(isRatioVeryHighVolume&& is_volVeryHigh1 ) changeText('[' + leng +  ']' +  '\t [1] [Very H]' + '\t' + '[' + cap1 + ' $]'  + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
+        if(isRatioHighVolume    && is_volHigh1     ) changeText('[' + leng +  ']' +  '\t [1] [High]'   + '\t' + '[' + cap1 + ' $]'  + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
+        if(isRatioNormalVolume  && is_volNormal1   ) changeText('[' + leng +  ']' +  '\t [1] [Normal]' + '\t' + '[' + cap1 + ' $]'  + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
+        if(isRatioLowVolume     && is_volLow1      ) changeText('[' + leng +  ']' +  '\t [1] [Low]'    + '\t' + '[' + cap1 + ' $]'  + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
+        if(isRatioVeryLowVolume && is_volVeryLow1  ) changeText('[' + leng +  ']' +  '\t [1] [Very L]' + '\t' + '[' + cap1 + ' $]'  + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
+      }
+      if(document.getElementById('Bar2').checked)
+      {    
+        if(isRatioUltraVolume   && is_volUltraHigh2) changeText('[' + leng +  ']' +  '\t [1] [Ultra]'  + '\t' + '[' + cap2 + ' $]' + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
+        if(isRatioVeryHighVolume&& is_volVeryHigh2 ) changeText('[' + leng +  ']' +  '\t [2] [Very H]' + '\t' + '[' + cap2 + ' $]' + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
+        if(isRatioHighVolume    && is_volHigh2     ) changeText('[' + leng +  ']' +  '\t [2] [High]'   + '\t' + '[' + cap2 + ' $]' + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
+        if(isRatioNormalVolume  && is_volNormal2   ) changeText('[' + leng +  ']' +  '\t [2] [Normal]' + '\t' + '[' + cap2 + ' $]' + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
+        if(isRatioLowVolume     && is_volLow2      ) changeText('[' + leng +  ']' +  '\t [2] [Low]'    + '\t' + '[' + cap2 + ' $]' + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
+        if(isRatioVeryLowVolume && is_volVeryLow2  ) changeText('[' + leng +  ']' +  '\t [2] [Very L]' + '\t' + '[' + cap2 + ' $]' + '\t'+ "-->   " +  marketSymbol,'binanceCoin');
+      }
     }
     if(isF02 && c < fibo_02)
     {
@@ -731,6 +771,8 @@ function HistorycalSavingBinance(apiData,marketSymbol){
     //   else changeText(leng+ '\t [< 0.5]' + ' \t  '+ "-->   " +  marketSymbol,'binanceCoin');
     // }
     updateBarprogress();
+    // console.log("==========> var_cal_length_vol_average: " + var_cal_length_vol_average);
+    document.getElementById("averageValue").textContent = var_cal_length_vol_average
 }
 
 
@@ -787,6 +829,8 @@ async function getBarInforMexc(marketSymbol, timeInterval, numberOfDatasets) {
   updateBarprogress();
 }
 function getDataBarHistorycalSavingMexc(){
+  checkBox()
+  checkBox()
   deleteText("mexcCoin");
   checkBox();
   console.log('=============>>>>>>> All Mexc USDT coins: '+ ', total = ' +allSymbolUSDT_mexc.length + '-->' +allSymbolUSDT_mexc  );
@@ -821,6 +865,8 @@ function HistorycalSavingMexc(apiData,marketSymbol){
   var lowPrice = [];
   var closePrice = [];
   var volume = [];
+  checkBox(); //updating checked box
+  cal_length_vol_average();  
   if(apiData.data.length < 1)
   return;
 
@@ -882,31 +928,31 @@ function HistorycalSavingMexc(apiData,marketSymbol){
 
     // ==============> define Fibo volume    
     //sma24 in volume
-    if(_length > 24)
+    if(_length > var_cal_length_vol_average)
     {
-      for(var i = currentIndex; i >  currentIndex - 24; i--)
+      for(var i = currentIndex; i >  currentIndex - var_cal_length_vol_average; i--)
       {
         smaV24 = smaV24 + parseFloat(volume[i]);
       }  
-      smaV24 = smaV24/24;
+      smaV24 = smaV24/var_cal_length_vol_average;
     }
 
-    if(_length > 25)
+    if(_length > var_cal_length_vol_average+1)
     {
-      for(var i = currentIndex-1; i >  currentIndex - 25; i--)
+      for(var i = currentIndex-1; i >  currentIndex - (var_cal_length_vol_average+1); i--)
       {
         smaV24_1 = smaV24_1 + parseFloat(volume[i]);
       }  
-      smaV24_1 = smaV24_1/24;
+      smaV24_1 = smaV24_1/var_cal_length_vol_average;
     }
 	
-    if(_length > 26)
+    if(_length > var_cal_length_vol_average+2)
     {
-      for(var i = currentIndex-2; i >  currentIndex - 26; i--)
+      for(var i = currentIndex-2; i >  currentIndex - (var_cal_length_vol_average+2); i--)
       {
         smaV24_2 = smaV24_2 + parseFloat(volume[i]);
       }  
-      smaV24_2 = smaV24_2/24;
+      smaV24_2 = smaV24_2/var_cal_length_vol_average;
     }
 	
     var ratioUltraVolume =      2.272;
@@ -975,33 +1021,36 @@ function HistorycalSavingMexc(apiData,marketSymbol){
       // Xóa tất cả các dấu '_'
       marketSymbol = marketSymbol.replace(/_/g, "");
     }
-    if(document.getElementById('Bar0').checked)
+    if(smaV24 != 0 && smaV24_1 != 0 && smaV24_2 != 0)
     {
-      if(isRatioUltraVolume   && is_volUltraHigh) changeText('[' + leng +  ']' +  '\t [0] [Ultra]'  + '\t' + '[' + cap + ' $]'  + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
-      if(isRatioVeryHighVolume&& is_volVeryHigh ) changeText('[' + leng +  ']' +  '\t [0] [Very H]' + '\t' + '[' + cap + ' $]'  + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
-      if(isRatioHighVolume    && is_volHigh     ) changeText('[' + leng +  ']' +  '\t [0] [High]'   + '\t' + '[' + cap + ' $]'  + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
-      if(isRatioNormalVolume  && is_volNormal   ) changeText('[' + leng +  ']' +  '\t [0] [Normal]' + '\t' + '[' + cap + ' $]'  + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
-      if(isRatioLowVolume     && is_volLow      ) changeText('[' + leng +  ']' +  '\t [0] [Low]'    + '\t' + '[' + cap + ' $]'  + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
-      if(isRatioVeryLowVolume && is_volVeryLow  ) changeText('[' + leng +  ']' +  '\t [0] [Very L]' + '\t' + '[' + cap + ' $]'  + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
-    }
-    if(document.getElementById('Bar1').checked)
-    {    
-      if(isRatioUltraVolume   && is_volUltraHigh1) changeText('[' + leng +  ']' +  '\t [1] [Ultra]'  + '\t' + '[' + cap1 + ' $]'  + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
-      if(isRatioVeryHighVolume&& is_volVeryHigh1 ) changeText('[' + leng +  ']' +  '\t [1] [Very H]' + '\t' + '[' + cap1 + ' $]'  + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
-      if(isRatioHighVolume    && is_volHigh1     ) changeText('[' + leng +  ']' +  '\t [1] [High]'   + '\t' + '[' + cap1 + ' $]'  + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
-      if(isRatioNormalVolume  && is_volNormal1   ) changeText('[' + leng +  ']' +  '\t [1] [Normal]' + '\t' + '[' + cap1 + ' $]'  + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
-      if(isRatioLowVolume     && is_volLow1      ) changeText('[' + leng +  ']' +  '\t [1] [Low]'    + '\t' + '[' + cap1 + ' $]'  + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
-      if(isRatioVeryLowVolume && is_volVeryLow1  ) changeText('[' + leng +  ']' +  '\t [1] [Very L]' + '\t' + '[' + cap1 + ' $]'  + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
-    }
-    if(document.getElementById('Bar2').checked)
-    {    
-      if(isRatioUltraVolume   && is_volUltraHigh2) changeText('[' + leng +  ']' +  '\t [2] [Ultra]'  + '\t' + '[' + cap2 + ' $]' + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
-      if(isRatioVeryHighVolume&& is_volVeryHigh2 ) changeText('[' + leng +  ']' +  '\t [2] [Very H]' + '\t' + '[' + cap2 + ' $]' + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
-      if(isRatioHighVolume    && is_volHigh2     ) changeText('[' + leng +  ']' +  '\t [2] [High]'   + '\t' + '[' + cap2 + ' $]' + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
-      if(isRatioNormalVolume  && is_volNormal2   ) changeText('[' + leng +  ']' +  '\t [2] [Normal]' + '\t' + '[' + cap2 + ' $]' + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
-      if(isRatioLowVolume     && is_volLow2      ) changeText('[' + leng +  ']' +  '\t [2] [Low]'    + '\t' + '[' + cap2 + ' $]' + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
-      if(isRatioVeryLowVolume && is_volVeryLow2  ) changeText('[' + leng +  ']' +  '\t [2] [Very L]' + '\t' + '[' + cap2 + ' $]' + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
-    }    
+       if(document.getElementById('Bar0').checked)
+      {
+        if(isRatioUltraVolume   && is_volUltraHigh) changeText('[' + leng +  ']' +  '\t [0] [Ultra]'  + '\t' + '[' + cap + ' $]'  + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
+        if(isRatioVeryHighVolume&& is_volVeryHigh ) changeText('[' + leng +  ']' +  '\t [0] [Very H]' + '\t' + '[' + cap + ' $]'  + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
+        if(isRatioHighVolume    && is_volHigh     ) changeText('[' + leng +  ']' +  '\t [0] [High]'   + '\t' + '[' + cap + ' $]'  + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
+        if(isRatioNormalVolume  && is_volNormal   ) changeText('[' + leng +  ']' +  '\t [0] [Normal]' + '\t' + '[' + cap + ' $]'  + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
+        if(isRatioLowVolume     && is_volLow      ) changeText('[' + leng +  ']' +  '\t [0] [Low]'    + '\t' + '[' + cap + ' $]'  + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
+        if(isRatioVeryLowVolume && is_volVeryLow  ) changeText('[' + leng +  ']' +  '\t [0] [Very L]' + '\t' + '[' + cap + ' $]'  + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
+      }
+      if(document.getElementById('Bar1').checked)
+      {    
+        if(isRatioUltraVolume   && is_volUltraHigh1) changeText('[' + leng +  ']' +  '\t [1] [Ultra]'  + '\t' + '[' + cap1 + ' $]'  + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
+        if(isRatioVeryHighVolume&& is_volVeryHigh1 ) changeText('[' + leng +  ']' +  '\t [1] [Very H]' + '\t' + '[' + cap1 + ' $]'  + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
+        if(isRatioHighVolume    && is_volHigh1     ) changeText('[' + leng +  ']' +  '\t [1] [High]'   + '\t' + '[' + cap1 + ' $]'  + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
+        if(isRatioNormalVolume  && is_volNormal1   ) changeText('[' + leng +  ']' +  '\t [1] [Normal]' + '\t' + '[' + cap1 + ' $]'  + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
+        if(isRatioLowVolume     && is_volLow1      ) changeText('[' + leng +  ']' +  '\t [1] [Low]'    + '\t' + '[' + cap1 + ' $]'  + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
+        if(isRatioVeryLowVolume && is_volVeryLow1  ) changeText('[' + leng +  ']' +  '\t [1] [Very L]' + '\t' + '[' + cap1 + ' $]'  + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
+      }
+      if(document.getElementById('Bar2').checked)
+      {    
+        if(isRatioUltraVolume   && is_volUltraHigh2) changeText('[' + leng +  ']' +  '\t [2] [Ultra]'  + '\t' + '[' + cap2 + ' $]' + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
+        if(isRatioVeryHighVolume&& is_volVeryHigh2 ) changeText('[' + leng +  ']' +  '\t [2] [Very H]' + '\t' + '[' + cap2 + ' $]' + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
+        if(isRatioHighVolume    && is_volHigh2     ) changeText('[' + leng +  ']' +  '\t [2] [High]'   + '\t' + '[' + cap2 + ' $]' + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
+        if(isRatioNormalVolume  && is_volNormal2   ) changeText('[' + leng +  ']' +  '\t [2] [Normal]' + '\t' + '[' + cap2 + ' $]' + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
+        if(isRatioLowVolume     && is_volLow2      ) changeText('[' + leng +  ']' +  '\t [2] [Low]'    + '\t' + '[' + cap2 + ' $]' + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
+        if(isRatioVeryLowVolume && is_volVeryLow2  ) changeText('[' + leng +  ']' +  '\t [2] [Very L]' + '\t' + '[' + cap2 + ' $]' + '\t'+ "-->   " +  marketSymbol,'mexcCoin');
+      } 
+    }  
     //check data    
     var c = closePrice[currentIndex];
     var leng = _length;
@@ -1067,7 +1116,7 @@ function HistorycalSavingMexc(apiData,marketSymbol){
       // else changeText(leng+ '\t [< 0.5]' + ' \t  '+ "-->   " +  marketSymbol,'mexcCoin');
     }
     updateBarprogress();
-
+    document.getElementById("averageValue").textContent = var_cal_length_vol_average
 }
 // Dac Luu <--
 function resetBarprogress()
