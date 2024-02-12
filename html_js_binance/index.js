@@ -556,7 +556,7 @@ function HistorycalSavingBinance(apiData,marketSymbol){
       {
         smaV24_1 = smaV24_1 + parseFloat(volume[i]);
       }  
-      smaV24_1 = smaV24_1/24;
+      smaV24_1 = smaV24_1/25;
     }
 	
     if(apiData.length > 26)
@@ -565,7 +565,7 @@ function HistorycalSavingBinance(apiData,marketSymbol){
       {
         smaV24_2 = smaV24_2 + parseFloat(volume[i]);
       }  
-      smaV24_2 = smaV24_2/24;
+      smaV24_2 = smaV24_2/26;
     }
 	
     var ratioUltraVolume =      2.272;
@@ -747,6 +747,7 @@ async function getDataBarMexc() {
 
   for( var i = 0; i < symbols.length; i++)
   {
+    if(i > document.getElementById('limitSymbol').value ) break;
     if(symbols[i].symbol.includes('USD') && !symbols[i].symbol.includes('3L_') && !symbols[i].symbol.includes('3S_'))
     {
       allSymbolUSDT_mexc.push(symbols[i].symbol);
@@ -807,6 +808,7 @@ function HistorycalSavingMexc(apiData,marketSymbol){
   var highPrice = [];
   var lowPrice = [];
   var closePrice = [];
+  var volume = [];
   if(apiData.data.length < 1)
   return;
 
@@ -816,6 +818,7 @@ function HistorycalSavingMexc(apiData,marketSymbol){
     highPrice[index]  = apiData.data[index][3];
     lowPrice[index]   = apiData.data[index][4];
     closePrice[index] = apiData.data[index][2];
+    volume[index]     = apiData.data[index][5];
   }
 
   var _length = apiData.data.length;
@@ -829,6 +832,9 @@ function HistorycalSavingMexc(apiData,marketSymbol){
     var fibo_05 = 0.0;
     var sma20 = 0.0;
     var sma50 = 0.0;
+    var smaV24 = 0.0;
+	  var smaV24_1 = 0.0;
+	  var smaV24_2 = 0.0;
 
     for(var i = 0; i < _length; i++)
     {
@@ -861,6 +867,129 @@ function HistorycalSavingMexc(apiData,marketSymbol){
       sma50 = sma50/50;
     }
 
+
+    // ==============> define Fibo volume    
+    //sma24 in volume
+    if(_length > 24)
+    {
+      for(var i = currentIndex; i >  currentIndex - 24; i--)
+      {
+        smaV24 = smaV24 + parseFloat(volume[i]);
+      }  
+      smaV24 = smaV24/24;
+    }
+
+    if(_length > 25)
+    {
+      for(var i = currentIndex-1; i >  currentIndex - 25; i--)
+      {
+        smaV24_1 = smaV24_1 + parseFloat(volume[i]);
+      }  
+      smaV24_1 = smaV24_1/25;
+    }
+	
+    if(_length > 26)
+    {
+      for(var i = currentIndex-2; i >  currentIndex - 26; i--)
+      {
+        smaV24_2 = smaV24_2 + parseFloat(volume[i]);
+      }  
+      smaV24_2 = smaV24_2/26;
+    }
+	
+    var ratioUltraVolume =      2.272;
+    var ratioVeryHighVolume =   1.618;
+    var ratioHighVolume =       1.272;
+    var ratioNormalVolume =     0.786;
+    var ratioLowVolume =        0.382;
+    var ratioVeryLowVolume =    0.382;   
+    
+    var ultraHighVolumeMin   = smaV24 * ratioUltraVolume       ;
+    var veryHighVolumeMin    = smaV24 * ratioVeryHighVolume    ;
+    var highVolumeMin        = smaV24 * ratioHighVolume        ;
+    var normalVolumeMin      = smaV24 * ratioNormalVolume      ;
+    var lowVolumeMin         = smaV24 * ratioLowVolume         ;
+    var veryLowVolumeMin     = smaV24 * ratioVeryLowVolume     ;
+	
+    var ultraHighVolumeMin1   = smaV24_1 * ratioUltraVolume       ;
+    var veryHighVolumeMin1    = smaV24_1 * ratioVeryHighVolume    ;
+    var highVolumeMin1        = smaV24_1 * ratioHighVolume        ;
+    var normalVolumeMin1      = smaV24_1 * ratioNormalVolume      ;
+    var lowVolumeMin1         = smaV24_1 * ratioLowVolume         ;
+    var veryLowVolumeMin1     = smaV24_1 * ratioVeryLowVolume     ;
+
+    var ultraHighVolumeMin2   = smaV24_2 * ratioUltraVolume       ;
+    var veryHighVolumeMin2    = smaV24_2 * ratioVeryHighVolume    ;
+    var highVolumeMin2        = smaV24_2 * ratioHighVolume        ;
+    var normalVolumeMin2      = smaV24_2 * ratioNormalVolume      ;
+    var lowVolumeMin2         = smaV24_2 * ratioLowVolume         ;
+    var veryLowVolumeMin2     = smaV24_2 * ratioVeryLowVolume     ;	
+    
+    var vol  = parseFloat(volume[currentIndex])   ;
+    var vol1 = parseFloat(volume[currentIndex-1]) ;
+    var vol2 = parseFloat(volume[currentIndex-2]) ;
+
+    var cap  = parseInt((parseFloat(volume[currentIndex])   * parseFloat(closePrice[currentIndex])  )/1000000);
+    var cap1 = parseInt((parseFloat(volume[currentIndex-1]) * parseFloat(closePrice[currentIndex-1]))/1000000);
+    var cap2 = parseInt((parseFloat(volume[currentIndex-2]) * parseFloat(closePrice[currentIndex-2]))/1000000);
+	
+    var is_volUltraHigh        = vol >= ultraHighVolumeMin                                     ;
+    var is_volVeryHigh         = vol >= veryHighVolumeMin   && vol < ultraHighVolumeMin     ;
+    var is_volHigh             = vol >= highVolumeMin       && vol < veryHighVolumeMin      ;
+    var is_volNormal           = vol >= normalVolumeMin     && vol < highVolumeMin          ;
+    var is_volLow              = vol >= lowVolumeMin        && vol < normalVolumeMin        ;
+    var is_volVeryLow          = vol < lowVolumeMin   										  ;  
+
+    var is_volUltraHigh1        = vol1 >= ultraHighVolumeMin1                                     ;
+    var is_volVeryHigh1         = vol1 >= veryHighVolumeMin1   && vol1 < ultraHighVolumeMin1     ;
+    var is_volHigh1             = vol1 >= highVolumeMin1       && vol1 < veryHighVolumeMin1      ;
+    var is_volNormal1           = vol1 >= normalVolumeMin1     && vol1 < highVolumeMin1          ;
+    var is_volLow1              = vol1 >= lowVolumeMin1        && vol1 < normalVolumeMin1        ;
+    var is_volVeryLow1          = vol1 < lowVolumeMin1   										  ; 
+
+    var is_volUltraHigh2        = vol2 >= ultraHighVolumeMin2                                     ;
+    var is_volVeryHigh2         = vol2 >= veryHighVolumeMin2   && vol2 < ultraHighVolumeMin2     ;
+    var is_volHigh2             = vol2 >= highVolumeMin2       && vol2 < veryHighVolumeMin2      ;
+    var is_volNormal2           = vol2 >= normalVolumeMin2     && vol2 < highVolumeMin2          ;
+    var is_volLow2              = vol2 >= lowVolumeMin2        && vol2 < normalVolumeMin2        ;
+    var is_volVeryLow2          = vol2 < lowVolumeMin2   										  ; 
+	
+    //===================== end
+    //check data    
+    var c = closePrice[currentIndex];
+    var leng = apiData.data.length;
+    // console.log(marketSymbol + ": " + smaV24 + ", " + vol);
+    if (marketSymbol.includes("_")) {
+      // Xóa tất cả các dấu '_'
+      marketSymbol = marketSymbol.replace(/_/g, "");
+    }
+    if(document.getElementById('Bar0').checked)
+    {
+      if(isRatioUltraVolume   && is_volUltraHigh) changeText(leng +  '\t [Bar 0] [Ultra]'  + '\t' + '[' + cap + 'M $]'  + '\t'+ marketSymbol,'mexcCoin');
+      if(isRatioVeryHighVolume&& is_volVeryHigh ) changeText(leng +  '\t [Bar 0] [Very H]' + '\t' + '[' + cap + 'M $]'  + '\t'+ marketSymbol,'mexcCoin');
+      if(isRatioHighVolume    && is_volHigh     ) changeText(leng +  '\t [Bar 0] [High]'   + '\t' + '[' + cap + 'M $]'  + '\t'+ marketSymbol,'mexcCoin');
+      if(isRatioNormalVolume  && is_volNormal   ) changeText(leng +  '\t [Bar 0] [Normal]' + '\t' + '[' + cap + 'M $]'  + '\t'+ marketSymbol,'mexcCoin');
+      if(isRatioLowVolume     && is_volLow      ) changeText(leng +  '\t [Bar 0] [Low]'    + '\t' + '[' + cap + 'M $]'  + '\t'+ marketSymbol,'mexcCoin');
+      if(isRatioVeryLowVolume && is_volVeryLow  ) changeText(leng +  '\t [Bar 0] [Very L]' + '\t' + '[' + cap + 'M $]'  + '\t'+ marketSymbol,'mexcCoin');
+    }
+    if(document.getElementById('Bar1').checked)
+    {    
+      if(isRatioUltraVolume   && is_volUltraHigh1) changeText(leng + '\t [Bar 1] [Ultra]'  + '\t' + '[' + cap1 + 'M $]'  + '\t'+ marketSymbol,'mexcCoin');
+      if(isRatioVeryHighVolume&& is_volVeryHigh1 ) changeText(leng + '\t [Bar 1] [Very H]' + '\t' + '[' + cap1 + 'M $]'  + '\t'+ marketSymbol,'mexcCoin');
+      if(isRatioHighVolume    && is_volHigh1     ) changeText(leng + '\t [Bar 1] [High]'   + '\t' + '[' + cap1 + 'M $]'  + '\t'+ marketSymbol,'mexcCoin');
+      if(isRatioNormalVolume  && is_volNormal1   ) changeText(leng + '\t [Bar 1] [Normal]' + '\t' + '[' + cap1 + 'M $]'  + '\t'+ marketSymbol,'mexcCoin');
+      if(isRatioLowVolume     && is_volLow1      ) changeText(leng + '\t [Bar 1] [Low]'    + '\t' + '[' + cap1 + 'M $]'  + '\t'+ marketSymbol,'mexcCoin');
+      if(isRatioVeryLowVolume && is_volVeryLow1  ) changeText(leng + '\t [Bar 1] [Very L]' + '\t' + '[' + cap1 + 'M $]'  + '\t'+ marketSymbol,'mexcCoin');
+    }
+    if(document.getElementById('Bar2').checked)
+    {    
+      if(isRatioUltraVolume   && is_volUltraHigh2) changeText(leng + '\t [Bar 2] [Ultra]'  + '\t' + '[' + cap2 + 'M $]' + '\t'+ marketSymbol,'mexcCoin');
+      if(isRatioVeryHighVolume&& is_volVeryHigh2 ) changeText(leng + '\t [Bar 2] [Very H]' + '\t' + '[' + cap2 + 'M $]' + '\t'+ marketSymbol,'mexcCoin');
+      if(isRatioHighVolume    && is_volHigh2     ) changeText(leng + '\t [Bar 2] [High]'   + '\t' + '[' + cap2 + 'M $]' + '\t'+ marketSymbol,'mexcCoin');
+      if(isRatioNormalVolume  && is_volNormal2   ) changeText(leng + '\t [Bar 2] [Normal]' + '\t' + '[' + cap2 + 'M $]' + '\t'+ marketSymbol,'mexcCoin');
+      if(isRatioLowVolume     && is_volLow2      ) changeText(leng + '\t [Bar 2] [Low]'    + '\t' + '[' + cap2 + 'M $]' + '\t'+ marketSymbol,'mexcCoin');
+      if(isRatioVeryLowVolume && is_volVeryLow2  ) changeText(leng + '\t [Bar 2] [Very L]' + '\t' + '[' + cap2 + 'M $]' + '\t'+ marketSymbol,'mexcCoin');
+    }    
     //check data    
     var c = closePrice[currentIndex];
     var leng = _length;
@@ -917,12 +1046,13 @@ function HistorycalSavingMexc(apiData,marketSymbol){
         changeText(leng+ '\t [< 0.5]--[< sma20,sma50]' + ' \t  '+ marketSymbol,'mexcCoin');
     }
     if(c > fibo_05)
-      console.log('mexcCoin default > 0.5: ' +marketSymbol );
+      ;
+      // console.log('mexcCoin default > 0.5: ' +marketSymbol );
     }
     if(isF02 === false && isF03 === false && isF05 === false)
     {
-      if(c > fibo_05) changeText(leng+ '\t [> 0.5]' + ' \t  '+ marketSymbol,'mexcCoin');
-      else changeText(leng+ '\t [< 0.5]' + ' \t  '+ marketSymbol,'mexcCoin');
+      // if(c > fibo_05) changeText(leng+ '\t [> 0.5]' + ' \t  '+ marketSymbol,'mexcCoin');
+      // else changeText(leng+ '\t [< 0.5]' + ' \t  '+ marketSymbol,'mexcCoin');
     }
     updateBarprogress();
 
