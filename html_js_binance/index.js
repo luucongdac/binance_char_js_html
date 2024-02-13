@@ -1131,6 +1131,31 @@ function HistorycalSavingMexc(apiData,marketSymbol){
     document.getElementById("averageValue").textContent = var_cal_length_vol_average
 }
 // Dac Luu <--
+
+function formatTime(hours, minutes, seconds) {
+  if (hours > 0) {
+      return hours + ':' + minutes + ':' + seconds;
+  } else if (minutes > 0) {
+      return minutes + ':' + seconds;
+  } else {
+      return seconds;
+  }
+}
+var delayTime_ms = 0;
+
+function countdownTimer(countBar, maxBar) {
+      if(countBar == 1)
+        delayTime_ms = document.getElementById('delayTime').value
+      let temp = (maxBar - countBar)*delayTime_ms/1000;
+      let hours = Math.floor(temp / 3600);
+      let minutes = Math.floor((temp % 3600) / 60);
+      let seconds = Math.floor((temp % 3600) % 60);
+      document.getElementById('countdown').textContent = formatTime(hours, minutes, seconds) + 's';
+      if (countBar == maxBar) {
+          document.getElementById('countdown').textContent = '';
+      }
+  }
+
 function resetBarprogress()
 {
   countBar = 0;
@@ -1140,6 +1165,7 @@ function updateBarprogress()
   countBar +=1;
   document.getElementById("progress").value = (countBar/maxBar)*100;
   document.getElementById('statusProgress').innerText = countBar + "/" + maxBar; 
+  countdownTimer(countBar, maxBar);
 }
 function deleteText(id)
 {
