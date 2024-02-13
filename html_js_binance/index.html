@@ -69,32 +69,46 @@
 	<input type="checkbox" id="lowerSMA20-50" name="box8" value="true" >
 	<label for="box8">lower SMA20 and SMA50</label><br>
 	<br>
-	<input type="checkbox" id="RatioUltraVolume" name="box9" value="true" checked>
-	<label for="box9">Ultra</label><br>	
-	<input type="checkbox" id="RatioVeryHighVolume" name="box10" value="true" checked>
-	<label for="box10">Very High</label><br>	
-	<input type="checkbox" id="RatioHighVolume" name="box11" value="true" checked>
-	<label for="box11">High</label><br>	
-	<input type="checkbox" id="RatioNormalVolume" name="box12" value="true">
-	<label for="box12">Normal</label><br>	
-	<input type="checkbox" id="RatioLowVolume" name="box13" value="true">
-	<label for="box13">Low</label><br>	
-	<input type="checkbox" id="RatioVeryLowVolume" name="box14" value="true">
-	<label for="box14">Very Low</label><br>	
+	<div class="checkbox-column">
+		<input type="checkbox" id="RatioUltraVolume" name="box9" value="true" checked>
+		<label for="box9">Ultra</label><br>    
+		<input type="checkbox" id="RatioVeryHighVolume" name="box10" value="true" checked>
+		<label for="box10">Very High</label><br>    
+		<input type="checkbox" id="RatioHighVolume" name="box11" value="true" checked>
+		<label for="box11">High</label><br>    
+		<input type="checkbox" id="RatioNormalVolume" name="box12" value="true">
+		<label for="box12">Normal</label><br>    
+		<input type="checkbox" id="RatioLowVolume" name="box13" value="true">
+		<label for="box13">Low</label><br>    
+		<input type="checkbox" id="RatioVeryLowVolume" name="box14" value="true">
+		<label for="box14">Very Low</label><br>    
+	</div>
+	
+	<div class="checkbox-column">
+		<input type="checkbox" id="Bar0" name="box15" value="true">
+		<label for="box15">Bar 0</label><br>    
+		<input type="checkbox" id="Bar1" name="box16" value="true" checked>
+		<label for="box16">Bar 1</label><br>    
+		<input type="checkbox" id="Bar2" name="box17" value="true">
+		<label for="box17">Bar 2</label><br>    
+	</div>
+	
+	<div class="checkbox-column">
+		<label><input type="checkbox" id="checkboxT" checked> T $</label><br>
+		<label><input type="checkbox" id="checkboxB" checked> B $</label><br>
+		<label><input type="checkbox" id="checkboxM" checked> M $</label><br>
+		<label><input type="checkbox" id="checkboxK" checked> K $</label><br>
+		<label><input type="checkbox" id="checkboxDollar" checked> $</label><br>
+	</div>
+	
 	<br>	
-	<input type="checkbox" id="Bar0" name="box15" value="true" >
-	<label for="box15">Bar 0</label><br>	
-	<input type="checkbox" id="Bar1" name="box16" value="true" checked>
-	<label for="box16">Bar 1</label><br>	
-	<input type="checkbox" id="Bar2" name="box17" value="true" >
-	<label for="box17">Bar 2</label><br>	
-	<br>	
+
 	<button onclick="checkBox()">load check Box</button>
 	<br>
 
-	<span id="totalstreams"></span> streams tracked<br/>
+	<!-- <span id="totalstreams"></span> streams tracked<br/>
 	Total traded base asset volume:<br/>
-	<div id="streams"></div>
+	<div id="streams"></div> -->
 
 	<br>
 	<br>

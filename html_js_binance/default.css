@@ -174,3 +174,10 @@ body {
 	color: #5a9900;
 	left: 4.5em;
 }
+
+.checkbox-column {
+    float: left;
+    width: 33.33%;
+    box-sizing: border-box;
+    padding: 0 35px;
+}
