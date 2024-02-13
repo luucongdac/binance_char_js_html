@@ -1377,3 +1377,16 @@ function handleMessage(msg) {
 
   document.getElementById('stream_' + stream).innerText = msg.v;
 }
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+  var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+  for (var i = 0; i < checkboxes.length; i++) {
+      checkboxes[i].addEventListener('change', function() {
+        console.log("===> refresh filer!");
+        getDataBarHistorycalSavingBinance();
+        getDataBarHistorycalSavingMexc();
+      });
+  }
+});
