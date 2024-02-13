@@ -456,6 +456,10 @@ async function getDataBarBinance() {
   delete allSymbolUSDT;
   delete allSymbolBTC;
   delete historyDataBinance;
+  allSymbolUSD = []
+  allSymbolUSDT = []
+  allSymbolBTC = []
+  historyDataBinance = [];
 
   deleteText("binanceCoin");
   var api_url = 'https://api.binance.com/api/v1/exchangeInfo'
@@ -792,6 +796,12 @@ async function getDataBarMexc() {
   delete allSymbolUSDT_mexc;
   delete allSymbolBTC_mexc;
   delete historyDataMex;
+
+  allSymbolUSD_mexc = []
+  allSymbolUSDT_mexc = []
+  allSymbolBTC_mexc = []
+  countBar = 0;
+  maxBar = 0;
 
   // var api_url = 'https://www.mexc.com/open/api/v2/market/api_default_symbols'
   var api_url = 'https://www.mexc.com/open/api/v2/market/symbols'
